@@ -67,5 +67,3 @@ async def predict_eeg_api(file: UploadFile = File(...)):
         "disclaimer": "This is a screening tool, not a medical diagnosis."
     }
 
-    if __name__ == "__main__":
-    ...
