@@ -1,8 +1,17 @@
+import os
 import numpy as np
+import joblib
+
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# ---------------- PATHS ----------------
+FEATURE_PATH = "Data/features"
+MODEL_PATH = "models"
+
+os.makedirs(MODEL_PATH, exist_ok=True)
 
 # ---------------- LOAD DATA ----------------
 X = np.load("Data/features/X_ibib.npy")
@@ -28,7 +37,11 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 # ---------------- CLASSIFIER ----------------
-model = SVC(kernel="linear", C=1.0)
+model = SVC(kernel="linear",
+             C=1.0,
+             probability=True,
+             class_weight="balanced")
+
 model.fit(X_train, y_train)
 
 # ---------------- PREDICTION ----------------
@@ -42,4 +55,11 @@ print("\nAccuracy:", acc)
 print("\nConfusion Matrix:\n", cm)
 print("\nClassification Report:\n", classification_report(y_test, y_pred))
 
+# ---------------- SAVE PKL FILES ----------------
+joblib.dump(model, f"{MODEL_PATH}/eeg_model.pkl")
+joblib.dump(scaler, f"{MODEL_PATH}/eeg_scaler.pkl")
+
+print("\n💾 EEG model saved:")
+print(" - models/eeg_model.pkl")
+print(" - models/eeg_scaler.pkl")
 print("\n✅ 75/25 training completed successfully.")

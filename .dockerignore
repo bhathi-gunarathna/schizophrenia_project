@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+.env
+.venv
+eeg_env
+.ipynb_checkpoints
