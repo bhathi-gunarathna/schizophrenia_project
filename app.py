@@ -1,16 +1,21 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import shutil
 import os
 
 from utils.fmri_pipeline import predict_fmri
 from utils.eeg_pipeline import predict_eeg
+from utils.multimodal_pipeline import multimodal_predict
 
 app = FastAPI(
-    title="Schizophrenia Screening System (fMRI MVP)",
-    description="Upload fMRI (.nii.gz) to detect schizophrenia",
+    title="SchzoFusion – Schizophrenia Screening System",
+    description="Multimodal AI platform for schizophrenia screening using fMRI and EEG.",
     version="1.0"
 )
+
+# Serve static files (CSS, JS assets)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -47,6 +52,22 @@ async def predict_fmri_api(file: UploadFile = File(...)):
 def home():
     return FileResponse("static/index.html")
 
+@app.get("/fmri")
+def fmri_page():
+    return FileResponse("static/fmri.html")
+
+@app.get("/eeg")
+def eeg_page():
+    return FileResponse("static/eeg.html")
+
+@app.get("/multimodal")
+def multimodal_page():
+    return FileResponse("static/multimodal.html")
+
+@app.get("/about")
+def about_page():
+    return FileResponse("static/about.html")
+
 
 @app.post("/predict_eeg")
 async def predict_eeg_api(file: UploadFile = File(...)):
@@ -67,3 +88,30 @@ async def predict_eeg_api(file: UploadFile = File(...)):
         "disclaimer": "This is a screening tool, not a medical diagnosis."
     }
 
+@app.post("/predict_multimodal")
+async def predict_multimodal(
+        eeg_file: UploadFile = File(None),
+        fmri_file: UploadFile = File(None)):
+
+    os.makedirs("temp", exist_ok=True)
+
+    eeg_path = None
+    fmri_path = None
+
+    if eeg_file:
+        eeg_path = f"temp/{eeg_file.filename}"
+        with open(eeg_path, "wb") as f:
+            f.write(await eeg_file.read())
+
+    if fmri_file:
+        fmri_path = f"temp/{fmri_file.filename}"
+        with open(fmri_path, "wb") as f:
+            f.write(await fmri_file.read())
+
+    label, confidence = multimodal_predict(eeg_path, fmri_path)
+
+    return {
+        "prediction": label,
+        "confidence": confidence,
+        "class_id": 1 if label == "Suffering from Schizophrenia" else 0
+    }

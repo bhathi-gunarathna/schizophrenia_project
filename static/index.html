@@ -1,210 +1,766 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Schizophrenia Screening System</title>
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="SchzoFusion – AI-powered multimodal schizophrenia screening platform using fMRI and EEG neuroimaging." />
+    <title>SchzoFusion | AI Schizophrenia Screening</title>
+    <link rel="stylesheet" href="/static/shared.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
     <style>
-        body {
-            background: linear-gradient(135deg, #eef2f3, #d9e4f5);
-            min-height: 100vh;
+        /* ── Index-page styles ───────────────────────────────────── */
+
+        /* Hero */
+        .hero {
+            padding: 88px 48px 72px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .main-card {
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--blue);
+            background: var(--blue-pale);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 24px;
         }
 
-        .result-box {
-            font-weight: 600;
-            font-size: 1rem;
+        .eyebrow-pulse {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--blue);
+            animation: dot-pulse 1.8s ease-in-out infinite;
         }
 
-        .footer-note {
-            font-size: 12px;
-            color: #6c757d;
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.8rem, 6vw, 4.4rem);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.05;
+            color: var(--text);
+            margin-bottom: 22px;
+        }
+
+        .hero h1 .text-grad {
+            background: linear-gradient(120deg, var(--blue) 0%, #60a5fa 45%, var(--teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 540px;
+            margin: 0 auto 52px;
+            line-height: 1.82;
+        }
+
+        /* Stats strip */
+        .stats-strip {
+            display: inline-flex;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--sh-md);
+            margin-bottom: 0;
+        }
+
+        .stat-cell {
+            padding: 20px 36px;
+            text-align: center;
+            position: relative;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .stat-cell+.stat-cell::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 1px;
+            background: var(--border);
+        }
+
+        .stat-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--blue), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: 0.7rem;
+            color: var(--muted2);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Mode grid section */
+        .mode-section {
+            padding: 0 48px 80px;
+        }
+
+        .mode-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            max-width: 1100px;
+            margin: 0 auto 32px;
+        }
+
+        .mode-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.4px;
+        }
+
+        .mode-sub {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .mode-action {
+            font-size: 0.8rem;
+            color: var(--blue);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 28px;
+            box-shadow: var(--sh-sm);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1), box-shadow 0.3s;
+            cursor: default;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--sh-lg);
+        }
+
+        /* Gradient roof strip */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--c-grad, linear-gradient(90deg, var(--blue), var(--teal)));
+            border-radius: 22px 22px 0 0;
+        }
+
+        /* Subtle ambient glow top-right */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, var(--c-glow, rgba(37, 99, 235, 0.08)) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .card-fmri {
+            --c-grad: linear-gradient(90deg, #2563eb, #60a5fa);
+            --c-glow: rgba(37, 99, 235, 0.09);
+        }
+
+        .card-eeg {
+            --c-grad: linear-gradient(90deg, #0891b2, #22d3ee);
+            --c-glow: rgba(8, 145, 178, 0.09);
+        }
+
+        .card-multi {
+            --c-grad: linear-gradient(90deg, #7c3aed, #a78bfa);
+            --c-glow: rgba(124, 58, 237, 0.09);
+        }
+
+        .card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .card-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            position: relative;
+        }
+
+        .card-fmri .card-icon-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        .card-eeg .card-icon-box {
+            background: linear-gradient(135deg, #ecfeff, #cffafe);
+        }
+
+        .card-multi .card-icon-box {
+            background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        /* Drop zone inside card */
+        .card .drop-zone {
+            border-radius: 14px;
+            padding: 28px 16px;
+            margin-bottom: 14px;
+        }
+
+        .card-fmri .drop-zone {
+            background: rgba(239, 246, 255, 0.5);
+            border-color: rgba(147, 197, 253, 0.5);
+        }
+
+        .card-eeg .drop-zone {
+            background: rgba(236, 254, 255, 0.5);
+            border-color: rgba(165, 243, 252, 0.5);
+        }
+
+        .card-multi .drop-zone {
+            background: rgba(245, 243, 255, 0.5);
+            border-color: rgba(196, 181, 253, 0.5);
+        }
+
+        .card-fmri .drop-zone:hover,
+        .card-fmri .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .card-eeg .drop-zone:hover,
+        .card-eeg .drop-zone.drag-over {
+            border-color: #0891b2;
+            background: #ecfeff;
+        }
+
+        .card-multi .drop-zone:hover,
+        .card-multi .drop-zone.drag-over {
+            border-color: #7c3aed;
+            background: #f5f3ff;
+        }
+
+        .card .dz-upload-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .card .dz-primary-text {
+            font-size: 0.8rem;
+        }
+
+        .card .dz-secondary-text {
+            font-size: 0.73rem;
+        }
+
+        .card .dz-format-badge {
+            margin-top: 10px;
+            font-size: 0.64rem;
+        }
+
+        .card-fmri .dz-format-badge {
+            color: var(--blue);
+            background: var(--blue-pale);
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+
+        .card-eeg .dz-format-badge {
+            color: var(--teal);
+            background: var(--teal-pale);
+            border-color: rgba(8, 145, 178, 0.2);
+        }
+
+        .card-multi .dz-format-badge {
+            color: var(--purple);
+            background: var(--purple-pale);
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        .card-fmri .file-selected-label {
+            color: var(--blue);
+        }
+
+        .card-eeg .file-selected-label {
+            color: var(--teal);
+        }
+
+        .card-multi .file-selected-label {
+            color: var(--purple);
+        }
+
+        /* Multimodal has 2 small zones */
+        .dual-zones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .dual-zones .drop-zone {
+            padding: 20px 10px;
+        }
+
+        .dual-zones .dz-upload-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        .dual-zones .dz-primary-text {
+            font-size: 0.72rem;
+        }
+
+        .dual-zones .dz-secondary-text {
+            font-size: 0.68rem;
+        }
+
+        .dual-zones .dz-format-badge {
+            display: none;
+        }
+
+        @media (max-width:900px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .mode-section,
+            .hero {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+
+            .hero {
+                padding-top: 60px;
+                padding-bottom: 52px;
+            }
+
+            .stats-strip {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .stat-cell+.stat-cell::before {
+                width: auto;
+                height: 1px;
+                top: 0;
+                left: 10%;
+                right: 10%;
+            }
         }
     </style>
 </head>
 
-<body class="d-flex align-items-center justify-content-center">
+<body>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <div id="bg-layer">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
+        <div class="bg-blob blob-3"></div>
+    </div>
 
-            <div class="card main-card p-4">
+    <div class="app-wrapper">
 
-                <h3 class="text-center mb-4">🧠 SchizoFusion Screening System</h3>
+        <!-- ── HEADER ─────────────────────────────────────────────── -->
+        <header id="hdr">
+            <div class="logo">
+                <a href="/" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
+                        </svg>
+                    </div>
+                </a>
+                <a href="/" class="logo-name-link">
+                    <span class="logo-wordmark">Schzo<span class="logo-wordmark-accent">Fusion</span></span>
+                </a>
+                <span class="logo-pill">AI</span>
+            </div>
 
-                <!-- Tabs -->
-                <ul class="nav nav-tabs mb-3" id="screenTabs">
-                    <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#fmriTab">
-                            fMRI Screening
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#eegTab">
-                            EEG Screening
-                        </button>
-                    </li>
-                </ul>
+            <nav>
+                <a href="/" class="nav-chip active">Screening</a>
+                <a href="/fmri" class="nav-chip">fMRI</a>
+                <a href="/eeg" class="nav-chip">EEG</a>
+                <a href="/multimodal" class="nav-chip">Multimodal</a>
+                <a href="/about" class="nav-chip">About</a>
+            </nav>
 
-                <div class="tab-content">
+            <div class="header-right">
+                <div class="status-badge">
+                    <div class="pulse-dot"></div>System Ready
+                </div>
+            </div>
+        </header>
 
-                    <!-- fMRI TAB -->
-                    <div class="tab-pane fade show active" id="fmriTab">
-                        <div class="mb-3">
-                            <input type="file" id="fmriFile" class="form-control" accept=".nii,.nii.gz">
-                        </div>
+        <!-- ── HERO ───────────────────────────────────────────────── -->
+        <section class="hero" id="hero">
+            <div class="hero-eyebrow">
+                <div class="eyebrow-pulse"></div>
+                Neural Analysis Platform
+            </div>
+            <h1>
+                AI-Powered<br />
+                Schizophrenia <span class="text-grad">Screening</span>
+            </h1>
+            <p class="hero-sub">
+                Upload neuroimaging data for real-time, AI-driven screening insights. SchzoFusion fuses fMRI spatial
+                biomarkers and EEG temporal patterns for precision analysis.
+            </p>
+            <div class="stats-strip">
+                <div class="stat-cell">
+                    <span class="stat-num" data-count="94.7" data-dec="1">0</span>
+                    <span class="stat-lbl">Accuracy %</span>
+                </div>
+                <div class="stat-cell">
+                    <span class="stat-num" data-count="3" data-dec="0">0</span>
+                    <span class="stat-lbl">Modalities</span>
+                </div>
+                <div class="stat-cell">
+                    <span class="stat-num" data-count="2" data-dec="0">0</span>
+                    <span class="stat-lbl">AI Models</span>
+                </div>
+            </div>
+        </section>
 
-                        <button class="btn btn-primary w-100" onclick="uploadFMRI()" id="fmriBtn">
-                            Check fMRI
-                        </button>
+        <!-- ── ANALYSIS CARDS ─────────────────────────────────────── -->
+        <section class="mode-section" id="modes">
+            <div class="mode-header">
+                <div>
+                    <div class="mode-title">Select Analysis Mode</div>
+                    <div class="mode-sub">Upload the appropriate neuroimaging file to begin AI screening</div>
+                </div>
+            </div>
 
-                        <div class="mt-3 text-center">
-                            <div id="fmriSpinner" class="spinner-border text-primary d-none"></div>
-                        </div>
+            <div class="cards">
 
-                        <div id="fmriResult" class="mt-3 result-box text-center"></div>
+                <!-- fMRI -->
+                <div class="card card-fmri" id="crd-fmri">
+                    <div class="card-head">
+                        <div class="card-icon-box">🧠</div>
+                        <span class="chip chip-blue">NIfTI</span>
+                    </div>
+                    <div class="card-title">fMRI Analysis</div>
+                    <div class="card-desc">Deep learning analysis of BOLD signal dynamics to detect
+                        schizophrenia-related spatial biomarkers from functional MRI scans.</div>
+
+                    <div class="drop-zone" id="dz-fmri">
+                        <input type="file" id="fmriFile" accept=".nii,.nii.gz" onchange="onFile(this,'fn-fmri')" />
+                        <span class="dz-upload-icon">📁</span>
+                        <div class="dz-primary-text">Drop file or click to browse</div>
+                        <div class="dz-secondary-text">.nii &nbsp;·&nbsp; .nii.gz</div>
+                        <div class="dz-format-badge">NIfTI Format</div>
+                        <div class="file-selected-label" id="fn-fmri"></div>
                     </div>
 
-                    <!-- EEG TAB -->
-                    <div class="tab-pane fade" id="eegTab">
-                        <div class="mb-3">
-                            <input type="file" id="eegFile" class="form-control" accept=".edf">
-                        </div>
-
-                        <button class="btn btn-success w-100" onclick="uploadEEG()" id="eegBtn">
-                            Check EEG
-                        </button>
-
-                        <div class="mt-3 text-center">
-                            <div id="eegSpinner" class="spinner-border text-success d-none"></div>
-                        </div>
-
-                        <div id="eegResult" class="mt-3 result-box text-center"></div>
-                    </div>
-
+                    <button class="btn btn-blue" id="b-fmri" onclick="runFMRI()">
+                        <div class="btn-spinner"></div>
+                        <span>Analyze fMRI Scan</span>
+                    </button>
+                    <div class="result-box" id="r-fmri"></div>
                 </div>
 
-                <p class="text-center mt-4 footer-note">
-                    ⚠ Research tool only. Not a medical diagnosis.
-                </p>
+                <!-- EEG -->
+                <div class="card card-eeg" id="crd-eeg">
+                    <div class="card-head">
+                        <div class="card-icon-box">📈</div>
+                        <span class="chip chip-teal">EDF</span>
+                    </div>
+                    <div class="card-title">EEG Analysis</div>
+                    <div class="card-desc">LSTM neural classifier processes temporal brainwave oscillation patterns to
+                        identify schizophrenia markers from EEG recordings.</div>
 
+                    <div class="drop-zone" id="dz-eeg">
+                        <input type="file" id="eegFile" accept=".edf" onchange="onFile(this,'fn-eeg')" />
+                        <span class="dz-upload-icon">📂</span>
+                        <div class="dz-primary-text">Drop file or click to browse</div>
+                        <div class="dz-secondary-text">.edf</div>
+                        <div class="dz-format-badge">EDF Format</div>
+                        <div class="file-selected-label" id="fn-eeg"></div>
+                    </div>
+
+                    <button class="btn btn-teal" id="b-eeg" onclick="runEEG()">
+                        <div class="btn-spinner"></div>
+                        <span>Analyze EEG Signal</span>
+                    </button>
+                    <div class="result-box" id="r-eeg"></div>
+                </div>
+
+                <!-- Multimodal -->
+                <div class="card card-multi" id="crd-multi">
+                    <div class="card-head">
+                        <div class="card-icon-box">🔬</div>
+                        <span class="chip chip-purple">Fusion</span>
+                    </div>
+                    <div class="card-title">Multimodal Fusion</div>
+                    <div class="card-desc">The fusion model correlates fMRI spatial + EEG temporal biomarkers
+                        simultaneously for enhanced diagnostic accuracy.</div>
+
+                    <div class="dual-zones">
+                        <div class="drop-zone" id="dz-m-eeg">
+                            <input type="file" id="multiEEG" accept=".edf" onchange="onFile(this,'fn-m-eeg')" />
+                            <span class="dz-upload-icon">📂</span>
+                            <div class="dz-primary-text">EEG (.edf)</div>
+                            <div class="dz-secondary-text">Drop or click</div>
+                            <div class="file-selected-label" id="fn-m-eeg"></div>
+                        </div>
+                        <div class="drop-zone" id="dz-m-fmri">
+                            <input type="file" id="multiFMRI" accept=".nii,.nii.gz"
+                                onchange="onFile(this,'fn-m-fmri')" />
+                            <span class="dz-upload-icon">📁</span>
+                            <div class="dz-primary-text">fMRI (.nii)</div>
+                            <div class="dz-secondary-text">Drop or click</div>
+                            <div class="file-selected-label" id="fn-m-fmri"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-purple" id="b-multi" onclick="runMulti()">
+                        <div class="btn-spinner"></div>
+                        <span>Run Fusion Analysis</span>
+                    </button>
+                    <div class="result-box" id="r-multi"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ── DISCLAIMER ─────────────────────────────────────────── -->
+        <div class="disclaimer" id="disc">
+            <div class="disclaimer-icon">⚠️</div>
+            <div class="disclaimer-text">
+                <strong>Research Use Only — Not a Clinical Diagnostic Tool</strong>
+                Results produced by SchzoFusion are intended to support research workflows only and must not be used as
+                a substitute for professional medical evaluation or clinical diagnosis.
             </div>
         </div>
-    </div>
-</div>
+
+        <!-- ── FOOTER ─────────────────────────────────────────────── -->
+        <footer>
+            <div class="footer-brand">
+                SchzoFusion
+                <div class="footer-brand-dot"></div>
+                <span style="font-weight:400;color:var(--muted);font-size:0.8rem;">AI Neuroimaging Platform</span>
+            </div>
+            <div class="footer-links">
+                <a href="/fmri" class="footer-link">fMRI</a>
+                <a href="/eeg" class="footer-link">EEG</a>
+                <a href="/multimodal" class="footer-link">Multimodal</a>
+                <a href="/about" class="footer-link">About</a>
+            </div>
+            <div class="footer-copy">© 2025 All rights reserved</div>
+        </footer>
+
+    </div><!-- /app-wrapper -->
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /* ── GSAP ──────────────────────────────────────────────── */
+        gsap.registerPlugin(ScrollTrigger);
 
-<script>
+        gsap.from('#hdr', { y: -56, opacity: 0, duration: .9, ease: 'power3.out' });
 
-function toPercent(value) {
-    return (value * 100).toFixed(1) + "%";
-}
+        const heroTl = gsap.timeline({ delay: .25 });
+        heroTl
+            .from('.hero-eyebrow', { y: 20, opacity: 0, duration: .6, ease: 'power3.out' })
+            .from('.hero h1', { y: 36, opacity: 0, duration: .75, ease: 'power3.out' }, '-=.38')
+            .from('.hero-sub', { y: 24, opacity: 0, duration: .65, ease: 'power3.out' }, '-=.42')
+            .from('.stats-strip', { y: 20, opacity: 0, duration: .6, ease: 'power2.out' }, '-=.36');
 
-async function uploadFMRI() {
-    const fileInput = document.getElementById("fmriFile");
-    const resultDiv = document.getElementById("fmriResult");
-    const spinner = document.getElementById("fmriSpinner");
-    const button = document.getElementById("fmriBtn");
-
-    if (fileInput.files.length === 0) {
-        resultDiv.innerHTML = `<div class="alert alert-warning">Please select a file.</div>`;
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-
-    spinner.classList.remove("d-none");
-    button.disabled = true;
-    resultDiv.innerHTML = "";
-
-    try {
-        const response = await fetch("/predict_fmri", {
-            method: "POST",
-            body: formData
+        /* Counter animation */
+        document.querySelectorAll('.stat-num[data-count]').forEach(el => {
+            const target = parseFloat(el.dataset.count);
+            const dec = parseInt(el.dataset.dec);
+            const obj = { v: 0 };
+            gsap.to(obj, {
+                v: target, duration: 2.2, delay: 1, ease: 'power2.out',
+                onUpdate() { el.textContent = dec ? obj.v.toFixed(dec) : Math.floor(obj.v); }
+            });
         });
 
-        const data = await response.json();
-
-        spinner.classList.add("d-none");
-        button.disabled = false;
-
-        let alertClass = data.prediction.toLowerCase().includes("schizophrenia")
-            ? "alert-danger"
-            : "alert-success";
-
-        resultDiv.innerHTML = `
-            <div class="alert ${alertClass}">
-                <strong>${data.prediction}</strong><br>
-                Confidence: ${toPercent(data.confidence)}
-            </div>
-        `;
-    }
-    catch {
-        spinner.classList.add("d-none");
-        button.disabled = false;
-        resultDiv.innerHTML = `<div class="alert alert-danger">Server error. Please try again.</div>`;
-    }
-}
-
-
-async function uploadEEG() {
-    const fileInput = document.getElementById("eegFile");
-    const resultDiv = document.getElementById("eegResult");
-    const spinner = document.getElementById("eegSpinner");
-    const button = document.getElementById("eegBtn");
-
-    if (fileInput.files.length === 0) {
-        resultDiv.innerHTML = `<div class="alert alert-warning">Please select a file.</div>`;
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-
-    spinner.classList.remove("d-none");
-    button.disabled = true;
-    resultDiv.innerHTML = "";
-
-    try {
-        const response = await fetch("/predict_eeg", {
-            method: "POST",
-            body: formData
+        /* Cards stagger */
+        gsap.from('.card', {
+            scrollTrigger: { trigger: '#modes', start: 'top 78%' },
+            y: 50, opacity: 0, duration: .85, stagger: .14, ease: 'power3.out'
         });
 
-        const data = await response.json();
+        /* Card 3D tilt */
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                const rx = (e.clientY - r.top - r.height / 2) / (r.height / 2) * 4;
+                const ry = (r.left + r.width / 2 - e.clientX) / (r.width / 2) * 4;
+                gsap.to(card, { rotateX: rx, rotateY: ry, duration: .35, ease: 'power2.out', transformPerspective: 900 });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateX: 0, rotateY: 0, duration: .6, ease: 'elastic.out(1,.5)' });
+            });
+        });
 
-        spinner.classList.add("d-none");
-        button.disabled = false;
+        gsap.from('#disc', {
+            scrollTrigger: { trigger: '#disc', start: 'top 92%' },
+            y: 16, opacity: 0, duration: .55, ease: 'power2.out'
+        });
 
-        let alertClass = data.prediction.toLowerCase().includes("schizophrenia")
-            ? "alert-danger"
-            : "alert-success";
+        /* ── Drag & Drop ─────────────────────────────────────── */
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault(); zone.classList.add('drag-over');
+                gsap.to(zone, { scale: 1.025, duration: .2, ease: 'power2.out' });
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+                gsap.to(zone, { scale: 1, duration: .2 });
+            });
+            zone.addEventListener('drop', e => {
+                e.preventDefault(); zone.classList.remove('drag-over');
+                gsap.to(zone, { scale: 1, duration: .2 });
+                const input = zone.querySelector('input[type="file"]');
+                if (e.dataTransfer.files[0] && input) {
+                    const dt = new DataTransfer(); dt.items.add(e.dataTransfer.files[0]);
+                    input.files = dt.files; input.dispatchEvent(new Event('change'));
+                }
+            });
+        });
 
-        resultDiv.innerHTML = `
-            <div class="alert ${alertClass}">
-                <strong>${data.prediction}</strong><br>
-                Confidence: ${toPercent(data.confidence)}
-            </div>
-        `;
-    }
-    catch {
-        spinner.classList.add("d-none");
-        button.disabled = false;
-        resultDiv.innerHTML = `<div class="alert alert-danger">Server error. Please try again.</div>`;
-    }
-}
-</script>
+        /* ── File select ─────────────────────────────────────── */
+        function onFile(input, labelId) {
+            const el = document.getElementById(labelId);
+            if (input.files?.[0]) {
+                el.innerHTML = `<span>✓</span> ${input.files[0].name}`;
+                gsap.fromTo(el, { scale: .8, opacity: 0 }, { scale: 1, opacity: 1, duration: .4, ease: 'back.out(2.5)' });
+            } else { el.innerHTML = ''; }
+        }
 
+        /* ── Result ──────────────────────────────────────────── */
+        function renderResult(id, data) {
+            const box = document.getElementById(id);
+            const healthy = data.class_id !== 1;
+            const cls = healthy ? 'healthy' : 'detection';
+            const resCls = healthy ? 'res-healthy' : 'res-detection';
+            const pct = (data.confidence * 100).toFixed(1);
+            const icon = healthy ? '✅' : '🔴';
+            box.className = `result-box visible ${resCls}`;
+            box.innerHTML = `
+    <div class="result-inner">
+      <div class="result-status-bar">
+        <span class="result-eyebrow">Analysis Result</span>
+        <span class="result-icon-wrap">${icon}</span>
+      </div>
+      <div class="result-prediction ${cls}">${data.prediction}</div>
+      <div class="conf-row">
+        <div class="conf-track"><div class="conf-fill ${cls}" style="width:0%"></div></div>
+        <div class="conf-pct ${cls}">${pct}%</div>
+      </div>
+    </div>`;
+            gsap.fromTo(box, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .5, ease: 'power3.out' });
+            setTimeout(() => { const f = box.querySelector('.conf-fill'); if (f) f.style.width = pct + '%'; }, 80);
+        }
+        function renderError(id, msg) {
+            const box = document.getElementById(id);
+            box.className = 'result-box visible res-error';
+            box.innerHTML = `<div class="result-inner"><p class="result-error-msg">⚠️ ${msg}</p></div>`;
+            gsap.fromTo(box, { x: -10, opacity: 0 }, { x: 0, opacity: 1, duration: .45, ease: 'elastic.out(1,.4)' });
+        }
+        function setBtn(id, loading) {
+            const b = document.getElementById(id);
+            b.classList.toggle('loading', loading);
+            gsap.to(b, loading ? { scale: .97, duration: .15 } : { scale: 1, duration: .3, ease: 'back.out(2)' });
+        }
+
+        /* ── API ─────────────────────────────────────────────── */
+        async function runFMRI() {
+            const f = document.getElementById('fmriFile');
+            if (!f.files.length) { renderError('r-fmri', 'Please select an fMRI file first.'); return; }
+            setBtn('b-fmri', true);
+            const fd = new FormData(); fd.append('file', f.files[0]);
+            try { renderResult('r-fmri', await (await fetch('/predict_fmri', { method: 'POST', body: fd })).json()); }
+            catch { renderError('r-fmri', 'Server error. Please try again.'); }
+            setBtn('b-fmri', false);
+        }
+        async function runEEG() {
+            const f = document.getElementById('eegFile');
+            if (!f.files.length) { renderError('r-eeg', 'Please select an EEG file first.'); return; }
+            setBtn('b-eeg', true);
+            const fd = new FormData(); fd.append('file', f.files[0]);
+            try { renderResult('r-eeg', await (await fetch('/predict_eeg', { method: 'POST', body: fd })).json()); }
+            catch { renderError('r-eeg', 'Server error. Please try again.'); }
+            setBtn('b-eeg', false);
+        }
+        async function runMulti() {
+            const e = document.getElementById('multiEEG').files[0];
+            const m = document.getElementById('multiFMRI').files[0];
+            if (!e && !m) { renderError('r-multi', 'Upload at least one file.'); return; }
+            setBtn('b-multi', true);
+            const fd = new FormData();
+            if (e) fd.append('eeg_file', e); if (m) fd.append('fmri_file', m);
+            try { renderResult('r-multi', await (await fetch('/predict_multimodal', { method: 'POST', body: fd })).json()); }
+            catch { renderError('r-multi', 'Server error. Please try again.'); }
+            setBtn('b-multi', false);
+        }
+    </script>
 </body>
+
 </html>

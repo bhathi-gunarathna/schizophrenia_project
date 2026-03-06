@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="SchzoFusion fMRI Analysis – Upload NIfTI scans for AI-driven schizophrenia biomarker detection." />
+    <title>fMRI Analysis | SchzoFusion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="/static/shared.css" />
+    <style>
+        /* Page-specific styles */
+        .page-hero {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0f2fe 100%);
+            border-bottom: 1px solid #bfdbfe;
+            padding: 56px 40px 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(8, 145, 178, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-icon-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.3);
+        }
+
+        .page-hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 4.5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #0f172a;
+            margin-bottom: 14px;
+        }
+
+        .page-hero h1 span {
+            background: linear-gradient(135deg, #2563eb, #0891b2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-hero p {
+            max-width: 560px;
+            margin: 0 auto;
+            color: #475569;
+            font-size: 0.98rem;
+            line-height: 1.78;
+        }
+
+        /* Upload section */
+        .upload-section {
+            max-width: 820px;
+            margin: 48px auto;
+            padding: 0 24px;
+        }
+
+        .upload-card {
+            background: #fff;
+            border: 1px solid #d4dde9;
+            border-radius: 20px;
+            padding: 36px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.09);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb, #3b82f6, #0891b2);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .upload-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .upload-sub {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 28px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #bfdbfe;
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8fbff;
+            position: relative;
+            transition: all 0.25s;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dz-icon {
+            font-size: 2.8rem;
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .dz-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .dz-sub {
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        .dz-badge {
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .file-name {
+            font-size: 0.8rem;
+            color: #2563eb;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px 24px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.18), transparent 60%);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary .spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .btn-primary.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-primary.loading {
+            pointer-events: none;
+            opacity: 0.82;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Result */
+        .result-box {
+            margin-top: 22px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-inner {
+            padding: 20px 22px;
+            border-radius: 14px;
+            border: 1px solid #d4dde9;
+            background: #f8fafc;
+        }
+
+        .result-box.healthy .result-inner {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .result-box.non-healthy .result-inner {
+            background: #fff5f5;
+            border-color: #fecaca;
+        }
+
+        .result-label {
+            font-size: 0.67rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .result-prediction {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .result-prediction.healthy {
+            color: #16a34a;
+        }
+
+        .result-prediction.non-healthy {
+            color: #dc2626;
+        }
+
+        .confidence-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .confidence-bar-wrap {
+            flex: 1;
+            height: 8px;
+            background: #e2e9f2;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .healthy .confidence-bar-fill {
+            background: linear-gradient(90deg, #16a34a, #4ade80);
+        }
+
+        .non-healthy .confidence-bar-fill {
+            background: linear-gradient(90deg, #dc2626, #f87171);
+        }
+
+        .confidence-pct {
+            font-size: 0.85rem;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .healthy .confidence-pct {
+            color: #16a34a;
+        }
+
+        .non-healthy .confidence-pct {
+            color: #dc2626;
+        }
+
+        .result-error {
+            font-size: 0.85rem;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        /* Info grid */
+        .info-section {
+            max-width: 820px;
+            margin: 0 auto 56px;
+            padding: 0 24px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-card {
+            background: #fff;
+            border: 1px solid #e2e9f2;
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+        }
+
+        .info-card-icon {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .info-card-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .info-card-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.65;
+        }
+
+        .info-section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-section,
+            .info-section {
+                padding: 0 16px;
+            }
+
+            .upload-card {
+                padding: 24px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="bg-layer">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
+    </div>
+
+    <div class="app-wrapper">
+
+        <!-- NAV -->
+        <header id="main-header">
+            <div class="logo">
+                <a href="/" class="logo-link">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
+                        </svg>
+                    </div>
+                </a>
+                <a href="/" class="logo-name-link">
+                    <div class="logo-name">Schzo<em>Fusion</em></div>
+                </a>
+                <div class="logo-tag">AI</div>
+            </div>
+            <nav>
+                <a href="/" class="nav-chip">Screening</a>
+                <a href="/fmri" class="nav-chip active">fMRI</a>
+                <a href="/eeg" class="nav-chip">EEG</a>
+                <a href="/multimodal" class="nav-chip">Multimodal</a>
+                <a href="/about" class="nav-chip">About</a>
+            </nav>
+            <div class="header-status">
+                <div class="status-dot"></div>
+                System Ready
+            </div>
+        </header>
+
+        <!-- PAGE HERO -->
+        <section class="page-hero" id="page-hero">
+            <div class="page-icon-wrap">🧠</div>
+            <h1>fMRI <span>Analysis</span></h1>
+            <p>Upload a NIfTI functional MRI scan and let our trained deep learning model analyse BOLD signal dynamics
+                to detect schizophrenia-related biomarkers.</p>
+        </section>
+
+        <!-- UPLOAD SECTION -->
+        <div class="upload-section" id="upload-section">
+            <div class="upload-card">
+                <div class="upload-title">Upload fMRI Scan</div>
+                <div class="upload-sub">Supported format: NIfTI (.nii.gz). Maximum file size: 500 MB.</div>
+
+                <div class="drop-zone" id="fmri-drop" role="button" aria-label="Upload fMRI file">
+                    <input type="file" id="fmriFile" accept=".nii,.nii.gz" onchange="handleFile(this,'fmri-fname')" />
+                    <span class="dz-icon">📁</span>
+                    <div class="dz-title">Drag &amp; drop your fMRI file here</div>
+                    <div class="dz-sub">or click anywhere in this area to browse</div>
+                    <div class="dz-badge">NIfTI &nbsp;·&nbsp; .nii / .nii.gz</div>
+                    <div class="file-name" id="fmri-fname"></div>
+                </div>
+
+                <button class="btn-primary" id="btn-fmri" onclick="runFMRI()">
+                    <div class="spinner"></div>
+                    <span>Run fMRI Analysis</span>
+                </button>
+
+                <div class="result-box" id="fmriResult"></div>
+            </div>
+        </div><!-- /upload-section -->
+
+        <!-- INFO GRID -->
+        <div class="info-section" id="info-section">
+            <div class="info-section-title">How fMRI Analysis Works</div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-card-icon">📡</span>
+                    <div class="info-card-title">BOLD Signal Processing</div>
+                    <div class="info-card-text">Our model processes Blood-Oxygen-Level-Dependent (BOLD) signals that
+                        reflect neural activity across brain regions.</div>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">🤖</span>
+                    <div class="info-card-title">Deep Learning Classifier</div>
+                    <div class="info-card-text">A 3D convolutional neural network trained on functional connectivity
+                        matrices identifies schizophrenia patterns.</div>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">🗺️</span>
+                    <div class="info-card-title">Spatial Feature Extraction</div>
+                    <div class="info-card-text">Spatial biomarkers are extracted from prefrontal, temporal, and parietal
+                        regions known to differ in schizophrenia.</div>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">📊</span>
+                    <div class="info-card-title">Confidence Scoring</div>
+                    <div class="info-card-text">Each prediction is accompanied by a confidence score to help researchers
+                        gauge the certainty of results.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISCLAIMER -->
+        <div class="disclaimer" id="disclaimer">
+            <div class="disclaimer-icon">⚠️</div>
+            <div class="disclaimer-text">
+                <strong>Research Use Only — Not a Clinical Diagnostic Tool</strong>
+                Results from SchzoFusion are for research screening only and must not replace professional clinical
+                evaluation or medical diagnosis.
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-inner">
+                <div class="footer-logo">SchzoFusion</div>
+                <div class="footer-sep"></div>
+                <div class="footer-copy">AI Neuroimaging Platform &middot; © 2025 All rights reserved</div>
+            </div>
+        </footer>
+    </div><!-- /app-wrapper -->
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from('#main-header', { y: -50, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.05 });
+        const tl = gsap.timeline({ delay: 0.2 });
+        tl.from('.page-icon-wrap', { scale: 0.6, opacity: 0, duration: 0.55, ease: 'back.out(2)' })
+            .from('.page-hero h1', { y: 28, opacity: 0, duration: 0.65, ease: 'power3.out' }, '-=0.3')
+            .from('.page-hero p', { y: 20, opacity: 0, duration: 0.55, ease: 'power3.out' }, '-=0.4');
+        gsap.from('#upload-section', {
+            scrollTrigger: { trigger: '#upload-section', start: 'top 82%' },
+            y: 40, opacity: 0, duration: 0.75, ease: 'power3.out'
+        });
+        gsap.from('.info-card', {
+            scrollTrigger: { trigger: '.info-grid', start: 'top 85%' },
+            y: 30, opacity: 0, duration: 0.65, stagger: 0.12, ease: 'power3.out'
+        });
+        gsap.from('#disclaimer', {
+            scrollTrigger: { trigger: '#disclaimer', start: 'top 92%' },
+            y: 16, opacity: 0, duration: 0.5, ease: 'power2.out'
+        });
+
+        const zone = document.getElementById('fmri-drop');
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); gsap.to(zone, { scale: 1.02, duration: 0.2 }); });
+        zone.addEventListener('dragleave', () => { zone.classList.remove('drag-over'); gsap.to(zone, { scale: 1, duration: 0.2 }); });
+        zone.addEventListener('drop', e => {
+            e.preventDefault(); zone.classList.remove('drag-over'); gsap.to(zone, { scale: 1, duration: 0.2 });
+            const input = zone.querySelector('input'); const dt = new DataTransfer();
+            if (e.dataTransfer.files[0]) { dt.items.add(e.dataTransfer.files[0]); input.files = dt.files; input.dispatchEvent(new Event('change')); }
+        });
+
+        function handleFile(input, labelId) {
+            const el = document.getElementById(labelId);
+            if (input.files && input.files[0]) {
+                el.textContent = '✓ ' + input.files[0].name;
+                gsap.fromTo(el, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(2.5)' });
+            } else { el.textContent = ''; }
+        }
+
+        function showResult(id, data) {
+            const box = document.getElementById(id);
+            const isHealthy = data.class_id !== 1;
+            const css = isHealthy ? 'healthy' : 'non-healthy';
+            const pct = (data.confidence * 100).toFixed(1);
+            const icon = isHealthy ? '✅' : '⚠️';
+            box.className = 'result-box show ' + css;
+            box.innerHTML = `<div class="result-inner">
+        <div class="result-label">Analysis Result</div>
+        <div style="font-size:2rem;margin-bottom:8px">${icon}</div>
+        <div class="result-prediction ${css}">${data.prediction}</div>
+        <div class="confidence-row">
+          <div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:0%"></div></div>
+          <div class="confidence-pct">${pct}%</div>
+        </div>
+      </div>`;
+            gsap.fromTo(box, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' });
+            setTimeout(() => { const f = box.querySelector('.confidence-bar-fill'); if (f) f.style.width = pct + '%'; }, 80);
+        }
+
+        function showError(id, msg) {
+            const box = document.getElementById(id);
+            box.className = 'result-box show';
+            box.innerHTML = `<div class="result-inner"><span class="result-error">⚠ ${msg}</span></div>`;
+            gsap.fromTo(box, { x: -10, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: 'elastic.out(1,0.4)' });
+        }
+
+        async function runFMRI() {
+            const fi = document.getElementById('fmriFile');
+            if (!fi.files.length) { showError('fmriResult', 'Please select an fMRI file first.'); return; }
+            const btn = document.getElementById('btn-fmri');
+            btn.classList.add('loading'); gsap.to(btn, { scale: 0.97, duration: 0.15 });
+            const fd = new FormData(); fd.append('file', fi.files[0]);
+            try {
+                const res = await fetch('/predict_fmri', { method: 'POST', body: fd });
+                showResult('fmriResult', await res.json());
+            } catch { showError('fmriResult', 'Server error. Please try again.'); }
+            btn.classList.remove('loading'); gsap.to(btn, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+        }
+    </script>
+</body>
+
+</html>

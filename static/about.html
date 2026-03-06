@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="description"
+        content="About SchzoFusion – AI-powered multimodal schizophrenia screening research platform." />
+    <title>About | SchzoFusion</title>
+    <link rel="stylesheet" href="/static/shared.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        .page-banner {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 45%, #ecfeff 100%);
+            border-bottom: 1px solid rgba(22, 163, 74, .12);
+            padding: 72px 48px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 70% at 20% 30%, rgba(22, 163, 74, .08) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 80% 70%, rgba(8, 145, 178, .08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .banner-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 26px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #2563eb, #0891b2, #16a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            box-shadow: 0 14px 40px rgba(37, 99, 235, .25), inset 0 1px 0 rgba(255, 255, 255, .25);
+        }
+
+        .banner-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 3.6rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .banner-title .hl {
+            background: linear-gradient(120deg, #2563eb, #0891b2, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .banner-desc {
+            max-width: 600px;
+            margin: 0 auto 28px;
+            color: var(--muted);
+            font-size: .98rem;
+            line-height: 1.85;
+        }
+
+        .banner-tags {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid;
+        }
+
+        .tag-blue {
+            color: var(--blue);
+            background: var(--blue-pale);
+            border-color: rgba(37, 99, 235, .2);
+        }
+
+        .tag-teal {
+            color: var(--teal);
+            background: var(--teal-pale);
+            border-color: rgba(8, 145, 178, .2);
+        }
+
+        .tag-green {
+            color: var(--green);
+            background: var(--green-pale);
+            border-color: rgba(22, 163, 74, .2);
+        }
+
+        .tag-purple {
+            color: var(--purple);
+            background: var(--purple-pale);
+            border-color: rgba(124, 58, 237, .2);
+        }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 56px 24px 0;
+        }
+
+        /* Mission */
+        .mission {
+            background: linear-gradient(135deg, #2563eb, #0891b2);
+            border-radius: 24px;
+            padding: 40px 44px;
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(37, 99, 235, .25);
+        }
+
+        .mission::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 260px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255, 255, 255, .1) 0%, transparent 70%);
+        }
+
+        .mission-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .mission h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .mission p {
+            font-size: .9rem;
+            color: rgba(255, 255, 255, .9);
+            line-height: 1.85;
+        }
+
+        /* Section */
+        .section-head {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            letter-spacing: -.3px;
+        }
+
+        .section-head span {
+            color: var(--blue);
+        }
+
+        /* Overview */
+        .ov-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .ov-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: var(--sh-sm);
+            transition: transform .25s, box-shadow .25s;
+        }
+
+        .ov-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--sh-md);
+        }
+
+        .ov-icon {
+            font-size: 1.9rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .ov-title {
+            font-weight: 700;
+            font-size: .88rem;
+            color: var(--text2);
+            margin-bottom: 6px;
+        }
+
+        .ov-text {
+            font-size: .78rem;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        /* Research */
+        .research-panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 36px;
+            margin-bottom: 48px;
+            box-shadow: var(--sh-sm);
+        }
+
+        .research-panel p {
+            font-size: .87rem;
+            color: var(--text3);
+            line-height: 1.88;
+            margin-bottom: 16px;
+        }
+
+        .research-panel p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            align-items: stretch;
+            margin-bottom: 48px;
+        }
+
+        .pipe-step {
+            flex: 1;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px 16px;
+            text-align: center;
+            box-shadow: var(--sh-xs);
+        }
+
+        .pipe-conn {
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            color: var(--muted2);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .pipe-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+        }
+
+        .pipe-icon {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .pipe-title {
+            font-weight: 700;
+            font-size: .8rem;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+
+        .pipe-text {
+            font-size: .72rem;
+            color: var(--muted);
+        }
+
+        /* Tech */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 48px;
+        }
+
+        .tech-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            gap: 14px;
+            box-shadow: var(--sh-xs);
+        }
+
+        .tech-icon {
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .tech-label {
+            font-weight: 700;
+            font-size: .85rem;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+
+        .tech-desc {
+            font-size: .78rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .tech-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tech-pill {
+            font-size: .64rem;
+            font-weight: 600;
+            padding: 2px 9px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: var(--text3);
+            border: 1px solid var(--border);
+        }
+
+        /* Team */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .team-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px 18px;
+            text-align: center;
+            box-shadow: var(--sh-sm);
+            transition: transform .25s;
+        }
+
+        .team-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .team-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .team-name {
+            font-weight: 700;
+            font-size: .87rem;
+            color: var(--text);
+            margin-bottom: 3px;
+        }
+
+        .team-role {
+            font-size: .73rem;
+            color: var(--muted);
+        }
+
+        @media(max-width:700px) {
+
+            .ov-grid,
+            .tech-grid,
+            .team-grid {
+                grid-template-columns: 1fr
+            }
+
+            .pipeline {
+                flex-direction: column;
+                gap: 12px
+            }
+
+            .pipe-conn {
+                transform: rotate(90deg);
+                justify-content: center
+            }
+
+            .content {
+                padding: 36px 16px 0
+            }
+
+            .research-panel {
+                padding: 22px 20px
+            }
+
+            .mission {
+                padding: 28px 24px
+            }
+        }
+
+        @media(max-width:900px) {
+            .ov-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="bg-layer">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
+        <div class="bg-blob blob-3"></div>
+    </div>
+    <div class="app-wrapper">
+
+        <header id="hdr">
+            <div class="logo">
+                <a href="/" class="logo-link">
+                    <div class="logo-mark"><svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
+                        </svg></div>
+                </a>
+                <a href="/" class="logo-name-link"><span class="logo-wordmark">Schzo<span
+                            class="logo-wordmark-accent">Fusion</span></span></a>
+                <span class="logo-pill">AI</span>
+            </div>
+            <nav>
+                <a href="/" class="nav-chip">Screening</a>
+                <a href="/fmri" class="nav-chip">fMRI</a>
+                <a href="/eeg" class="nav-chip">EEG</a>
+                <a href="/multimodal" class="nav-chip">Multimodal</a>
+                <a href="/about" class="nav-chip active">About</a>
+            </nav>
+            <div class="header-right">
+                <div class="status-badge">
+                    <div class="pulse-dot"></div>System Ready
+                </div>
+            </div>
+        </header>
+
+        <section class="page-banner" id="banner">
+            <div class="banner-icon">🧬</div>
+            <h1 class="banner-title">About <span class="hl">SchzoFusion</span></h1>
+            <p class="banner-desc">A final-year research project developing a multimodal AI platform that integrates
+                fMRI and EEG neuroimaging data to provide early, objective screening support for schizophrenia.</p>
+            <div class="banner-tags">
+                <span class="tag tag-blue">Deep Learning</span>
+                <span class="tag tag-teal">Neuroimaging</span>
+                <span class="tag tag-green">Healthcare AI</span>
+                <span class="tag tag-purple">Multimodal Fusion</span>
+            </div>
+        </section>
+
+        <div class="content">
+
+            <!-- Mission -->
+            <div class="mission" id="mission">
+                <span class="mission-icon">🎯</span>
+                <h3>Project Mission</h3>
+                <p>SchzoFusion aims to reduce the diagnostic delay associated with schizophrenia by providing clinicians
+                    and researchers with a fast, non-invasive, AI-assisted screening tool. By fusing complementary
+                    neuroimaging modalities — functional MRI and EEG — the platform captures both the spatial and
+                    temporal dimensions of schizophrenia-related brain abnormalities in a single unified analysis.</p>
+            </div>
+
+            <!-- Overview -->
+            <div class="section-head">Platform <span>Overview</span></div>
+            <div class="ov-grid" id="ov-grid">
+                <div class="ov-card"><span class="ov-icon">🧠</span>
+                    <div class="ov-title">fMRI Module</div>
+                    <div class="ov-text">3D CNN analyses BOLD signal patterns to detect spatial schizophrenia biomarkers
+                        in functional connectivity maps.</div>
+                </div>
+                <div class="ov-card"><span class="ov-icon">📈</span>
+                    <div class="ov-title">EEG Module</div>
+                    <div class="ov-text">LSTM classifier analyses temporal brainwave dynamics across frequency bands to
+                        identify oscillatory abnormalities.</div>
+                </div>
+                <div class="ov-card"><span class="ov-icon">🔬</span>
+                    <div class="ov-title">Fusion Module</div>
+                    <div class="ov-text">A joint classification head fuses spatial and temporal feature vectors for
+                        enhanced multi-modal screening accuracy.</div>
+                </div>
+            </div>
+
+            <!-- Research -->
+            <div class="section-head">Research <span>Background</span></div>
+            <div class="research-panel" id="research">
+                <p>Schizophrenia is a severe psychiatric disorder affecting approximately 1 in 100 people globally.
+                    Despite its prevalence, clinical diagnosis remains challenging due to symptom overlap with other
+                    conditions and reliance on subjective clinician assessment. The average delay from first symptoms to
+                    confirmed diagnosis is 1–2 years.</p>
+                <p>Neuroimaging studies have identified consistent structural and functional differences in the brains
+                    of individuals with schizophrenia — including altered prefrontal-limbic connectivity on fMRI and
+                    abnormal gamma-band oscillations on EEG. SchzoFusion operationalises this research by training deep
+                    learning models on these biomarkers to deliver rapid, objective screening support to research
+                    workflows.</p>
+                <p>This project is developed as a Final Year Project (FYP) at the Institute of Information Technology
+                    (IIT) and does not constitute a medical device or clinical diagnostic tool.</p>
+            </div>
+
+            <!-- Pipeline -->
+            <div class="section-head">Analysis <span>Pipeline</span></div>
+            <div class="pipeline" id="pipeline">
+                <div class="pipe-step">
+                    <div class="pipe-num">1</div><span class="pipe-icon">📤</span>
+                    <div class="pipe-title">File Upload</div>
+                    <div class="pipe-text">NIfTI / EDF file uploaded via the web interface.</div>
+                </div>
+                <div class="pipe-conn">→</div>
+                <div class="pipe-step">
+                    <div class="pipe-num">2</div><span class="pipe-icon">⚙️</span>
+                    <div class="pipe-title">Preprocessing</div>
+                    <div class="pipe-text">Normalisation, artefact removal, feature extraction.</div>
+                </div>
+                <div class="pipe-conn">→</div>
+                <div class="pipe-step">
+                    <div class="pipe-num">3</div><span class="pipe-icon">🤖</span>
+                    <div class="pipe-title">AI Inference</div>
+                    <div class="pipe-text">3D-CNN / LSTM / Fusion model runs inference.</div>
+                </div>
+                <div class="pipe-conn">→</div>
+                <div class="pipe-step">
+                    <div class="pipe-num">4</div><span class="pipe-icon">📊</span>
+                    <div class="pipe-title">Result</div>
+                    <div class="pipe-text">Prediction and confidence score returned.</div>
+                </div>
+            </div>
+
+            <!-- Tech -->
+            <div class="section-head">Technology <span>Stack</span></div>
+            <div class="tech-grid" id="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🐍</div>
+                    <div>
+                        <div class="tech-label">Backend</div>
+                        <div class="tech-desc">Python-based API serving model inference and file handling.</div>
+                        <div class="tech-pills"><span class="tech-pill">FastAPI</span><span
+                                class="tech-pill">Uvicorn</span><span class="tech-pill">Python 3.10</span></div>
+                    </div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🧠</div>
+                    <div>
+                        <div class="tech-label">AI & ML Models</div>
+                        <div class="tech-desc">Deep learning models for fMRI, EEG, and multimodal analysis.</div>
+                        <div class="tech-pills"><span class="tech-pill">PyTorch</span><span
+                                class="tech-pill">scikit-learn</span><span class="tech-pill">MNE-Python</span></div>
+                    </div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">🖥️</div>
+                    <div>
+                        <div class="tech-label">Frontend</div>
+                        <div class="tech-desc">Pure HTML/CSS/JS with GSAP animations. No framework dependencies.</div>
+                        <div class="tech-pills"><span class="tech-pill">HTML5</span><span
+                                class="tech-pill">CSS3</span><span class="tech-pill">GSAP 3</span></div>
+                    </div>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📦</div>
+                    <div>
+                        <div class="tech-label">Neuroimaging</div>
+                        <div class="tech-desc">Specialised libraries for reading and processing NIfTI and EDF formats.
+                        </div>
+                        <div class="tech-pills"><span class="tech-pill">NiBabel</span><span
+                                class="tech-pill">PyEDFlib</span><span class="tech-pill">NumPy</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team -->
+            <div class="section-head">Project <span>Team</span></div>
+            <div class="team-grid" id="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar" style="background:#eff6ff">👨‍💻</div>
+                    <div class="team-name">Bhathiya</div>
+                    <div class="team-role">AI Engineer &amp; FYP Lead</div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar" style="background:#f0fdf4">👩‍🔬</div>
+                    <div class="team-name">Research Supervisor</div>
+                    <div class="team-role">Academic Guidance</div>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar" style="background:#f5f3ff">🏫</div>
+                    <div class="team-name">IIT Sri Lanka</div>
+                    <div class="team-role">Host Institution</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="max-width:900px;margin:0 auto;padding:0 24px 48px;width:100%;">
+            <div class="disclaimer">
+                <div class="disclaimer-icon">⚠️</div>
+                <div class="disclaimer-text"><strong>Research Use Only — Not a Clinical Diagnostic
+                        Tool</strong>SchzoFusion is a research prototype developed as a Final Year Project. It does not
+                    constitute a regulated medical device and must not be used for clinical diagnosis or patient care
+                    decisions.</div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-brand">SchzoFusion<div class="footer-brand-dot"></div><span
+                    style="font-weight:400;color:var(--muted);font-size:.8rem;">AI Neuroimaging Platform &nbsp;·&nbsp;
+                    IIT Sri Lanka FYP</span></div>
+            <div class="footer-links"><a href="/fmri" class="footer-link">fMRI</a><a href="/eeg"
+                    class="footer-link">EEG</a><a href="/multimodal" class="footer-link">Multimodal</a><a href="/about"
+                    class="footer-link">About</a></div>
+            <div class="footer-copy">© 2025 All rights reserved</div>
+        </footer>
+    </div>
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from('#hdr', { y: -56, opacity: 0, duration: .9, ease: 'power3.out' });
+        gsap.timeline({ delay: .2 })
+            .from('.banner-icon', { scale: .6, opacity: 0, duration: .55, ease: 'back.out(2)' })
+            .from('.banner-title', { y: 28, opacity: 0, duration: .65, ease: 'power3.out' }, '-=.3')
+            .from('.banner-desc', { y: 22, opacity: 0, duration: .6, ease: 'power3.out' }, '-=.4')
+            .from('.tag', { y: 14, opacity: 0, duration: .45, stagger: .08, ease: 'power2.out' }, '-=.3');
+        gsap.from('#mission', { scrollTrigger: { trigger: '#mission', start: 'top 85%' }, y: 36, opacity: 0, duration: .75, ease: 'power3.out' });
+        gsap.from('#ov-grid .ov-card', { scrollTrigger: { trigger: '#ov-grid', start: 'top 85%' }, y: 28, opacity: 0, duration: .6, stagger: .12, ease: 'power3.out' });
+        gsap.from('#research', { scrollTrigger: { trigger: '#research', start: 'top 85%' }, y: 24, opacity: 0, duration: .65, ease: 'power3.out' });
+        gsap.from('#pipeline .pipe-step', { scrollTrigger: { trigger: '#pipeline', start: 'top 85%' }, y: 24, opacity: 0, duration: .6, stagger: .13, ease: 'power3.out' });
+        gsap.from('#tech-grid .tech-card', { scrollTrigger: { trigger: '#tech-grid', start: 'top 85%' }, y: 24, opacity: 0, duration: .6, stagger: .11, ease: 'power3.out' });
+        gsap.from('#team-grid .team-card', { scrollTrigger: { trigger: '#team-grid', start: 'top 88%' }, scale: .92, opacity: 0, duration: .5, stagger: .1, ease: 'back.out(1.5)' });
+    </script>
+</body>
+
+</html>

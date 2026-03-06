@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="description"
+        content="SchzoFusion Multimodal Fusion – Combine fMRI and EEG for enhanced AI schizophrenia screening." />
+    <title>Multimodal Analysis | SchzoFusion</title>
+    <link rel="stylesheet" href="/static/shared.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        .page-banner {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 55%, #faf5ff 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, .12);
+            padding: 64px 48px 56px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 80% at 80% 20%, rgba(124, 58, 237, .08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .banner-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            margin: 0 auto 22px;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            box-shadow: 0 12px 36px rgba(124, 58, 237, .3), inset 0 1px 0 rgba(255, 255, 255, .25);
+        }
+
+        .banner-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 4.5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -1.2px;
+            color: var(--text);
+            margin-bottom: 14px;
+        }
+
+        .banner-title .hl {
+            background: linear-gradient(120deg, #7c3aed, #0891b2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .banner-desc {
+            max-width: 580px;
+            margin: 0 auto;
+            color: var(--muted);
+            font-size: .97rem;
+            line-height: 1.82;
+        }
+
+        /* Fusion visual */
+        .fusion-bar {
+            background: rgba(245, 243, 255, .6);
+            border-bottom: 1px solid rgba(124, 58, 237, .08);
+            padding: 20px 48px;
+        }
+
+        .fusion-strip {
+            max-width: 760px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .fusion-node {
+            flex: 1;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            text-align: center;
+            box-shadow: var(--sh-xs);
+            max-width: 200px;
+        }
+
+        .fusion-node-icon {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .fusion-node-label {
+            font-weight: 700;
+            font-size: .78rem;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .fusion-op {
+            padding: 0 18px;
+            font-size: 1.4rem;
+            color: var(--muted2);
+            flex-shrink: 0;
+        }
+
+        .fusion-result-node {
+            flex: 1;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            border-radius: 16px;
+            padding: 16px 20px;
+            text-align: center;
+            box-shadow: 0 6px 24px rgba(124, 58, 237, .28);
+            max-width: 200px;
+        }
+
+        .fusion-result-node .fusion-node-icon {
+            filter: grayscale(0);
+        }
+
+        .fusion-result-node .fusion-node-label {
+            color: #fff;
+            opacity: .9;
+        }
+
+        .page-body {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 48px 24px 0;
+        }
+
+        .upload-panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 36px 40px;
+            box-shadow: var(--sh-md);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+
+        .upload-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7c3aed, #a78bfa, #0891b2);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .panel-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .panel-sub {
+            font-size: .83rem;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .panel-note {
+            background: var(--purple-pale);
+            border: 1px solid rgba(124, 58, 237, .15);
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: .78rem;
+            color: var(--purple);
+            font-weight: 500;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dual-zones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .drop-zone {
+            margin-bottom: 0;
+        }
+
+        .zone-purple {
+            background: rgba(245, 243, 255, .5);
+            border-color: rgba(196, 181, 253, .6);
+        }
+
+        .zone-purple:hover,
+        .zone-purple.drag-over {
+            background: #f5f3ff;
+            border-color: #7c3aed;
+        }
+
+        .zone-purple .dz-format-badge {
+            color: var(--purple);
+            background: var(--purple-pale);
+            border-color: rgba(124, 58, 237, .2);
+        }
+
+        .zone-purple .file-selected-label {
+            color: var(--purple);
+        }
+
+        .advantage-block {
+            background: linear-gradient(135deg, #7c3aed, #0891b2);
+            border-radius: 18px;
+            padding: 22px 26px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            box-shadow: 0 6px 24px rgba(124, 58, 237, .22);
+        }
+
+        .advantage-block-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .advantage-block-body strong {
+            display: block;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .advantage-block-body p {
+            font-size: .82rem;
+            color: rgba(255, 255, 255, .85);
+            line-height: 1.72;
+        }
+
+        .info-wrap {
+            margin-bottom: 48px;
+        }
+
+        .info-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 18px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media(max-width:640px) {
+
+            .dual-zones,
+            .info-grid {
+                grid-template-columns: 1fr
+            }
+
+            .fusion-strip {
+                flex-direction: column;
+                gap: 12px
+            }
+
+            .fusion-op {
+                transform: rotate(90deg)
+            }
+
+            .page-body {
+                padding: 32px 16px 0
+            }
+
+            .upload-panel {
+                padding: 24px 20px
+            }
+
+            .fusion-bar {
+                padding: 16px 24px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="bg-layer">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-3"></div>
+    </div>
+    <div class="app-wrapper">
+
+        <header id="hdr">
+            <div class="logo">
+                <a href="/" class="logo-link">
+                    <div class="logo-mark"><svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
+                        </svg></div>
+                </a>
+                <a href="/" class="logo-name-link"><span class="logo-wordmark">Schzo<span
+                            class="logo-wordmark-accent">Fusion</span></span></a>
+                <span class="logo-pill">AI</span>
+            </div>
+            <nav>
+                <a href="/" class="nav-chip">Screening</a>
+                <a href="/fmri" class="nav-chip">fMRI</a>
+                <a href="/eeg" class="nav-chip">EEG</a>
+                <a href="/multimodal" class="nav-chip active">Multimodal</a>
+                <a href="/about" class="nav-chip">About</a>
+            </nav>
+            <div class="header-right">
+                <div class="status-badge">
+                    <div class="pulse-dot"></div>System Ready
+                </div>
+            </div>
+        </header>
+
+        <section class="page-banner" id="banner">
+            <div class="banner-icon">🔬</div>
+            <h1 class="banner-title">Multimodal <span class="hl">Fusion Analysis</span></h1>
+            <p class="banner-desc">Combine fMRI spatial biomarkers and EEG temporal patterns. Our fusion model delivers
+                higher diagnostic accuracy than any single modality alone.</p>
+        </section>
+
+        <!-- Fusion diagram bar -->
+        <div class="fusion-bar" id="fusion-bar">
+            <div class="fusion-strip">
+                <div class="fusion-node"><span class="fusion-node-icon">🧠</span>
+                    <div class="fusion-node-label">fMRI</div>
+                </div>
+                <div class="fusion-op">+</div>
+                <div class="fusion-node"><span class="fusion-node-icon">📈</span>
+                    <div class="fusion-node-label">EEG</div>
+                </div>
+                <div class="fusion-op">→</div>
+                <div class="fusion-result-node"><span class="fusion-node-icon">🔬</span>
+                    <div class="fusion-node-label">Fusion Result</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <div class="upload-panel" id="panel">
+                <div class="panel-title">Upload Neuroimaging Files</div>
+                <div class="panel-sub">Provide one or both files. The fusion model works best when both modalities are
+                    available.</div>
+                <div class="panel-note">💡 At least one file (EEG or fMRI) is required to run analysis.</div>
+
+                <div class="dual-zones">
+                    <div class="drop-zone zone-purple" id="dz-eeg">
+                        <input type="file" id="multiEEG" accept=".edf" onchange="onFile(this,'fn-eeg')" />
+                        <span class="dz-upload-icon">📂</span>
+                        <div class="dz-primary-text">EEG Recording</div>
+                        <div class="dz-secondary-text">Drop or click &nbsp;·&nbsp; .edf</div>
+                        <div class="file-selected-label" id="fn-eeg"></div>
+                    </div>
+                    <div class="drop-zone zone-purple" id="dz-fmri">
+                        <input type="file" id="multiFMRI" accept=".nii,.nii.gz" onchange="onFile(this,'fn-fmri')" />
+                        <span class="dz-upload-icon">📁</span>
+                        <div class="dz-primary-text">fMRI Scan</div>
+                        <div class="dz-secondary-text">Drop or click &nbsp;·&nbsp; .nii</div>
+                        <div class="file-selected-label" id="fn-fmri"></div>
+                    </div>
+                </div>
+
+                <button class="btn btn-purple" id="btn" onclick="run()">
+                    <div class="btn-spinner"></div><span>Run Fusion Analysis</span>
+                </button>
+                <div class="result-box" id="result"></div>
+            </div>
+
+            <div class="advantage-block" id="adv">
+                <div class="advantage-block-icon">🚀</div>
+                <div class="advantage-block-body">
+                    <strong>Why Multimodal?</strong>
+                    <p>fMRI captures where brain abnormalities occur spatially; EEG captures when they occur temporally.
+                        Together they form a richer diagnostic signature, reducing false positives and capturing
+                        patterns that individual modalities miss.</p>
+                </div>
+            </div>
+
+            <div class="info-wrap" id="info">
+                <div class="info-label">How Fusion Analysis Works</div>
+                <div class="info-grid">
+                    <div class="info-card"><span class="info-card-icon">🔗</span>
+                        <div class="info-card-title">Cross-Modal Fusion</div>
+                        <div class="info-card-text">Feature vectors from fMRI and EEG pipelines are concatenated and
+                            passed through a joint classification head.</div>
+                    </div>
+                    <div class="info-card"><span class="info-card-icon">📐</span>
+                        <div class="info-card-title">Spatial + Temporal</div>
+                        <div class="info-card-text">The model exploits complementary information — structural location
+                            (fMRI) and timing dynamics (EEG).</div>
+                    </div>
+                    <div class="info-card"><span class="info-card-icon">⚡</span>
+                        <div class="info-card-title">Flexible Input</div>
+                        <div class="info-card-text">Model gracefully handles single-modality input, falling back to the
+                            respective unimodal classifier if needed.</div>
+                    </div>
+                    <div class="info-card"><span class="info-card-icon">📈</span>
+                        <div class="info-card-title">Higher Accuracy</div>
+                        <div class="info-card-text">Fusion consistently outperforms single-modality baselines with
+                            higher sensitivity and specificity.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <div class="disclaimer-icon">⚠️</div>
+            <div class="disclaimer-text"><strong>Research Use Only — Not a Clinical Diagnostic Tool</strong>Results are
+                for research screening only and must not replace professional clinical evaluation.</div>
+        </div>
+
+        <footer>
+            <div class="footer-brand">SchzoFusion<div class="footer-brand-dot"></div><span
+                    style="font-weight:400;color:var(--muted);font-size:.8rem;">AI Neuroimaging Platform</span></div>
+            <div class="footer-links"><a href="/fmri" class="footer-link">fMRI</a><a href="/eeg"
+                    class="footer-link">EEG</a><a href="/multimodal" class="footer-link">Multimodal</a><a href="/about"
+                    class="footer-link">About</a></div>
+            <div class="footer-copy">© 2025 All rights reserved</div>
+        </footer>
+    </div>
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from('#hdr', { y: -56, opacity: 0, duration: .9, ease: 'power3.out' });
+        gsap.timeline({ delay: .2 })
+            .from('.banner-icon', { scale: .6, opacity: 0, duration: .55, ease: 'back.out(2)' })
+            .from('.banner-title', { y: 28, opacity: 0, duration: .65, ease: 'power3.out' }, '-=.3')
+            .from('.banner-desc', { y: 20, opacity: 0, duration: .55, ease: 'power3.out' }, '-=.4');
+        gsap.from('#fusion-bar .fusion-node, #fusion-bar .fusion-result-node', { scrollTrigger: { trigger: '#fusion-bar', start: 'top 90%' }, y: 18, opacity: 0, duration: .5, stagger: .1, ease: 'back.out(1.5)' });
+        gsap.from('#panel', { scrollTrigger: { trigger: '#panel', start: 'top 82%' }, y: 40, opacity: 0, duration: .75, ease: 'power3.out' });
+        gsap.from('#adv', { scrollTrigger: { trigger: '#adv', start: 'top 88%' }, y: 24, opacity: 0, duration: .6, ease: 'power3.out' });
+        gsap.from('.info-card', { scrollTrigger: { trigger: '#info', start: 'top 85%' }, y: 28, opacity: 0, duration: .6, stagger: .12, ease: 'power3.out' });
+
+        ['dz-eeg', 'dz-fmri'].forEach(id => {
+            const dz = document.getElementById(id);
+            dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); gsap.to(dz, { scale: 1.02, duration: .2 }); });
+            dz.addEventListener('dragleave', () => { dz.classList.remove('drag-over'); gsap.to(dz, { scale: 1, duration: .2 }); });
+            dz.addEventListener('drop', e => {
+                e.preventDefault(); dz.classList.remove('drag-over'); gsap.to(dz, { scale: 1, duration: .2 });
+                const i = dz.querySelector('input'); const dt = new DataTransfer();
+                if (e.dataTransfer.files[0]) { dt.items.add(e.dataTransfer.files[0]); i.files = dt.files; i.dispatchEvent(new Event('change')); }
+            });
+        });
+        function onFile(input, lid) {
+            const el = document.getElementById(lid);
+            if (input.files?.[0]) { el.innerHTML = `<span>✓</span> ${input.files[0].name}`; gsap.fromTo(el, { scale: .8, opacity: 0 }, { scale: 1, opacity: 1, duration: .4, ease: 'back.out(2.5)' }); }
+            else el.innerHTML = '';
+        }
+        function renderResult(data) {
+            const box = document.getElementById('result'); const healthy = data.class_id !== 1; const cls = healthy ? 'healthy' : 'detection';
+            const pct = (data.confidence * 100).toFixed(1); const icon = healthy ? '✅' : '🔴';
+            box.className = `result-box visible ${healthy ? 'res-healthy' : 'res-detection'}`;
+            box.innerHTML = `<div class="result-inner"><div class="result-status-bar"><span class="result-eyebrow">Fusion Result</span><span class="result-icon-wrap">${icon}</span></div><div class="result-prediction ${cls}">${data.prediction}</div><div class="conf-row"><div class="conf-track"><div class="conf-fill ${cls}" style="width:0%"></div></div><div class="conf-pct ${cls}">${pct}%</div></div></div>`;
+            gsap.fromTo(box, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .5, ease: 'power3.out' });
+            setTimeout(() => { const f = box.querySelector('.conf-fill'); if (f) f.style.width = pct + '%'; }, 80);
+        }
+        function renderError(msg) {
+            const box = document.getElementById('result'); box.className = 'result-box visible res-error';
+            box.innerHTML = `<div class="result-inner"><p class="result-error-msg">⚠️ ${msg}</p></div>`;
+            gsap.fromTo(box, { x: -10, opacity: 0 }, { x: 0, opacity: 1, duration: .45, ease: 'elastic.out(1,.4)' });
+        }
+        async function run() {
+            const e = document.getElementById('multiEEG').files[0], m = document.getElementById('multiFMRI').files[0];
+            if (!e && !m) { renderError('Upload at least one file (EEG or fMRI).'); return; }
+            const btn = document.getElementById('btn'); btn.classList.add('loading'); gsap.to(btn, { scale: .97, duration: .15 });
+            const fd = new FormData(); if (e) fd.append('eeg_file', e); if (m) fd.append('fmri_file', m);
+            try { renderResult(await (await fetch('/predict_multimodal', { method: 'POST', body: fd })).json()); }
+            catch { renderError('Server error. Please try again.'); }
+            btn.classList.remove('loading'); gsap.to(btn, { scale: 1, duration: .3, ease: 'back.out(2)' });
+        }
+    </script>
+</body>
+
+</html>
