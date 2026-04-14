@@ -6,7 +6,7 @@ import os
 
 from utils.fmri_pipeline import predict_fmri
 from utils.eeg_pipeline import predict_eeg
-from utils.multimodal_pipeline import multimodal_predict
+from utils.early_fusion_pipeline import early_fusion_predict
 
 app = FastAPI(
     title="SchzoFusion – Schizophrenia Screening System",
@@ -71,47 +71,54 @@ def about_page():
 
 @app.post("/predict_eeg")
 async def predict_eeg_api(file: UploadFile = File(...)):
-    if not file.filename.endswith(".edf"):
-        return {"error": "Please upload a valid .edf EEG file"}
+    try:
+        if not file.filename.endswith(".edf"):
+            return {"error": "Please upload a valid .edf EEG file"}
 
-    file_path = f"temp_{file.filename}"
+        file_path = f"temp_{file.filename}"
 
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
 
-    prediction, confidence = predict_eeg(file_path)
+        prediction, confidence = predict_eeg(file_path)
 
-    return {
-        "modality": "EEG",
-        "prediction": prediction,
-        "confidence": round(confidence, 3),
-        "disclaimer": "This is a screening tool, not a medical diagnosis."
-    }
+        label = "Healthy" if prediction == 0 else "Non-Healthy (Schizophrenia)"
+
+        return {    
+            "modality": "EEG",
+            "prediction": label,
+            "class_id": prediction,
+            "confidence": round(confidence, 3),
+            "disclaimer": "This is a screening tool, not a medical diagnosis."
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.post("/predict_multimodal")
 async def predict_multimodal(
-        eeg_file: UploadFile = File(None),
-        fmri_file: UploadFile = File(None)):
+        eeg_file: UploadFile = File(...),
+        fmri_file: UploadFile = File(...)):
 
-    os.makedirs("temp", exist_ok=True)
+    try:
+        os.makedirs("temp", exist_ok=True)
 
-    eeg_path = None
-    fmri_path = None
-
-    if eeg_file:
         eeg_path = f"temp/{eeg_file.filename}"
         with open(eeg_path, "wb") as f:
             f.write(await eeg_file.read())
 
-    if fmri_file:
         fmri_path = f"temp/{fmri_file.filename}"
         with open(fmri_path, "wb") as f:
             f.write(await fmri_file.read())
 
-    label, confidence = multimodal_predict(eeg_path, fmri_path)
+        prediction, confidence = early_fusion_predict(eeg_path, fmri_path)
 
-    return {
-        "prediction": label,
-        "confidence": confidence,
-        "class_id": 1 if label == "Suffering from Schizophrenia" else 0
-    }
+        label = "Healthy" if prediction == 0 else "Schizophrenia"
+
+        return {
+            "prediction": label,
+            "confidence": confidence
+        }
+
+    except Exception as e:
+        return {"error": str(e)}

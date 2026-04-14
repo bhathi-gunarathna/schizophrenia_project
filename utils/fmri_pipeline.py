@@ -25,40 +25,50 @@ masker = NiftiLabelsMasker(
 )
 
 # --------------------------------------------------
-# Prediction function
+# 🔥 FEATURE EXTRACTION (USED IN EARLY FUSION)
 # --------------------------------------------------
 
-def predict_fmri(file_path: str):
+def extract_fmri_features(file_path: str):
 
     # 1. Extract ROI time-series
     time_series = masker.fit_transform(file_path)
 
     # 2. Functional connectivity
     corr = np.corrcoef(time_series.T)
+
+    # Upper triangle → feature vector
     features = corr[np.triu_indices_from(corr, k=1)]
 
+    return features
+
+
+# --------------------------------------------------
+# FULL PREDICTION (FOR fMRI ONLY API)
+# --------------------------------------------------
+
+def predict_fmri(file_path: str):
+
+    # Extract features
+    features = extract_fmri_features(file_path)
+
     # --------------------------------------------------
-    # 🔥 CRITICAL FIX: feature length alignment
+    # FIX: align feature size with training
     # --------------------------------------------------
     expected_len = scaler.n_features_in_
 
     if features.shape[0] < expected_len:
-        # Pad with zeros
-        pad_width = expected_len - features.shape[0]
-        features = np.pad(features, (0, pad_width))
-
+        features = np.pad(features, (0, expected_len - features.shape[0]))
     elif features.shape[0] > expected_len:
-        # Truncate
         features = features[:expected_len]
 
-    # Reshape for sklearn
+    # Reshape
     features = features.reshape(1, -1)
 
-    # 3. Apply scaler + PCA
+    # Apply scaler + PCA
     features = scaler.transform(features)
     features = pca.transform(features)
 
-    # 4. Predict
+    # Predict
     pred = model.predict(features)[0]
     prob = model.predict_proba(features)[0, 1]
 

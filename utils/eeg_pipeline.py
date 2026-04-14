@@ -1,68 +1,68 @@
+import mne
 import numpy as np
 import joblib
-import mne
 
-# ---------------- LOAD MODEL ----------------
-MODEL_PATH = "models/eeg_model.pkl"
-SCALER_PATH = "models/eeg_scaler.pkl"
+# Load trained model
+model = joblib.load("models/eeg_model.pkl")
+scaler = joblib.load("models/eeg_scaler.pkl")
 
-model = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
 
-# ---------------- PREPROCESS ----------------
-def preprocess_eeg(edf_file):
-    raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
+def extract_eeg_features(file_path):
 
-    montage = mne.channels.make_standard_montage("standard_1020")
-    raw.set_montage(montage, on_missing="ignore")
+    raw = mne.io.read_raw_edf(file_path, preload=True, verbose=False)
 
-    raw.filter(1.0, 40.0)
-    raw.set_eeg_reference("average")
+    raw.pick_types(eeg=True)
 
-    return raw
+    if len(raw.ch_names) >= 16:
+        raw.pick(raw.ch_names[:16])
+    else:
+        raise ValueError("Not enough EEG channels")
 
-# ---------------- FEATURE EXTRACTION ----------------
-def extract_bandpower_features(raw):
-    bands = {
-        "delta": (1, 4),
-        "theta": (4, 8),
-        "alpha": (8, 13),
-        "beta": (13, 30),
-        "gamma": (30, 40),
-    }
+    raw.filter(1, 40)
 
-    psd = raw.compute_psd(
-        method="welch",
+    data = raw.get_data()
+
+    mean = np.mean(data, axis=1)
+    std = np.std(data, axis=1)
+
+    sfreq = raw.info['sfreq']
+
+    psd, freqs = mne.time_frequency.psd_array_welch(
+        data,
+        sfreq=sfreq,
         fmin=1,
-        fmax=40,
-        n_fft=1024,
-        verbose=False
+        fmax=40
     )
 
-    psds = psd.get_data()
-    freqs = psd.freqs
+    delta = np.mean(psd[:, (freqs >= 1) & (freqs <= 4)], axis=1)
+    theta = np.mean(psd[:, (freqs >= 4) & (freqs <= 8)], axis=1)
+    alpha = np.mean(psd[:, (freqs >= 8) & (freqs <= 13)], axis=1)
+    beta  = np.mean(psd[:, (freqs >= 13) & (freqs <= 30)], axis=1)
 
-    features = []
+    features = np.concatenate([mean, std, delta, theta, alpha, beta])
 
-    for fmin, fmax in bands.values():
-        idx = (freqs >= fmin) & (freqs < fmax)
-        band_power = psds[:, idx].mean(axis=1)
-        features.append(band_power)
+    # Ensure fixed size (95)
+    expected_len = scaler.n_features_in_
 
-    return np.concatenate(features)
+    if len(features) > expected_len:
+        features = features[:expected_len]
+    elif len(features) < expected_len:
+        features = np.pad(features, (0, expected_len - len(features)))
 
-# ---------------- PREDICTION ----------------
-def predict_eeg(edf_path):
-    raw = preprocess_eeg(edf_path)
-    features = extract_bandpower_features(raw)
+    return features
+
+
+def predict_eeg(file_path):
+
+    features = extract_eeg_features(file_path)
 
     features = features.reshape(1, -1)
+
     features = scaler.transform(features)
 
-    prob = model.predict_proba(features)[0][1]
-    pred = int(prob >= 0.5)
+    pred = model.predict(features)[0]
+    score = model.decision_function(features)[0]
 
-    label = "Schizophrenia" if pred == 1 else "Healthy"
-    confidence = prob if pred == 1 else 1 - prob
+    prob = 1 / (1 + np.exp(-score))   # sigmoid
 
-    return label, round(float(confidence), 3)
+    return int(pred), float(prob)
