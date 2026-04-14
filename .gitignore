@@ -46,6 +46,7 @@ Data/EEG_IBIB/
 Data/fMRI/
 Data/raw/
 Data/preprocessed/
+Data/ASZED/
 
 # ===============================
 # Logs & temp

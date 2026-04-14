@@ -86,12 +86,13 @@
 
         /* Upload section */
         .upload-section {
-            max-width: 820px;
+            max-width: 100% !important;
             margin: 48px auto;
             padding: 0 24px;
         }
 
         .upload-card {
+            max-width: 100% !important;
             background: #fff;
             border: 1px solid #d4dde9;
             border-radius: 20px;
@@ -102,6 +103,7 @@
         }
 
         .upload-card::before {
+            max-width: 100% !important;
             content: '';
             position: absolute;
             top: 0;
@@ -362,7 +364,7 @@
         .info-section {
             max-width: 820px;
             margin: 0 auto 56px;
-            padding: 0 24px;
+            padding: 50px 24px;
         }
 
         .info-grid {
@@ -436,7 +438,7 @@
         <header id="main-header">
             <div class="logo">
                 <a href="/" class="logo-link">
-                    <div class="logo-icon">
+                    <div class="logo-mark">
                         <svg viewBox="0 0 24 24">
                             <path
                                 d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
@@ -444,9 +446,9 @@
                     </div>
                 </a>
                 <a href="/" class="logo-name-link">
-                    <div class="logo-name">Schzo<em>Fusion</em></div>
+                    <span class="logo-wordmark">Schzo<span class="logo-wordmark-accent">Fusion</span></span>
                 </a>
-                <div class="logo-tag">AI</div>
+                <div class="logo-pill">AI</div>
             </div>
             <nav>
                 <a href="/" class="nav-chip">Screening</a>
@@ -455,9 +457,10 @@
                 <a href="/multimodal" class="nav-chip">Multimodal</a>
                 <a href="/about" class="nav-chip">About</a>
             </nav>
-            <div class="header-status">
-                <div class="status-dot"></div>
-                System Ready
+            <div class="header-right">
+                <div class="status-badge">
+                    <div class="pulse-dot"></div>System Ready
+                </div>
             </div>
         </header>
 
@@ -469,6 +472,7 @@
                 to detect schizophrenia-related biomarkers.</p>
         </section>
 
+        <div style="display: grid; grid-template-columns: 1 fr 1fr; gap: 10px;">
         <!-- UPLOAD SECTION -->
         <div class="upload-section" id="upload-section">
             <div class="upload-card">
@@ -523,7 +527,7 @@
                 </div>
             </div>
         </div>
-
+</div>
         <!-- DISCLAIMER -->
         <div class="disclaimer" id="disclaimer">
             <div class="disclaimer-icon">⚠️</div>
@@ -534,12 +538,14 @@
             </div>
         </div>
 
-        <footer>
-            <div class="footer-inner">
-                <div class="footer-logo">SchzoFusion</div>
-                <div class="footer-sep"></div>
-                <div class="footer-copy">AI Neuroimaging Platform &middot; © 2025 All rights reserved</div>
-            </div>
+         <footer>
+            <div class="footer-brand">SchzoFusion<div class="footer-brand-dot"></div><span
+                    style="font-weight:400;color:var(--muted);font-size:.8rem;">AI Neuroimaging Platform &nbsp;·&nbsp;
+                    IIT - FYP</span></div>
+            <div class="footer-links"><a href="/fmri" class="footer-link">fMRI</a><a href="/eeg"
+                    class="footer-link">EEG</a><a href="/multimodal" class="footer-link">Multimodal</a><a href="/about"
+                    class="footer-link">About</a></div>
+            <div class="footer-copy">© 2026 All rights reserved</div>
         </footer>
     </div><!-- /app-wrapper -->
 

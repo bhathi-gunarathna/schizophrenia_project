@@ -213,11 +213,13 @@
         .card-eeg {
             --c-grad: linear-gradient(90deg, #0891b2, #22d3ee);
             --c-glow: rgba(8, 145, 178, 0.09);
+            transform: none !important;
         }
 
         .card-multi {
             --c-grad: linear-gradient(90deg, #7c3aed, #a78bfa);
             --c-glow: rgba(124, 58, 237, 0.09);
+            transform: none !important;
         }
 
         .card-head {
@@ -560,14 +562,14 @@
                         simultaneously for enhanced diagnostic accuracy.</div>
 
                     <div class="dual-zones">
-                        <div class="drop-zone" id="dz-m-eeg">
+                        <div class="drop-zone" id="dz-m-eeg" style="padding: 45px 10px;">
                             <input type="file" id="multiEEG" accept=".edf" onchange="onFile(this,'fn-m-eeg')" />
                             <span class="dz-upload-icon">📂</span>
                             <div class="dz-primary-text">EEG (.edf)</div>
                             <div class="dz-secondary-text">Drop or click</div>
                             <div class="file-selected-label" id="fn-m-eeg"></div>
                         </div>
-                        <div class="drop-zone" id="dz-m-fmri">
+                        <div class="drop-zone" id="dz-m-fmri" style="padding: 45px 10px;">
                             <input type="file" id="multiFMRI" accept=".nii,.nii.gz"
                                 onchange="onFile(this,'fn-m-fmri')" />
                             <span class="dz-upload-icon">📁</span>
@@ -602,7 +604,8 @@
             <div class="footer-brand">
                 SchzoFusion
                 <div class="footer-brand-dot"></div>
-                <span style="font-weight:400;color:var(--muted);font-size:0.8rem;">AI Neuroimaging Platform</span>
+                <span style="font-weight:400;color:var(--muted);font-size:0.8rem;">AI Neuroimaging Platform &nbsp;·&nbsp;
+                    IIT - FYP</span>
             </div>
             <div class="footer-links">
                 <a href="/fmri" class="footer-link">fMRI</a>
@@ -610,7 +613,7 @@
                 <a href="/multimodal" class="footer-link">Multimodal</a>
                 <a href="/about" class="footer-link">About</a>
             </div>
-            <div class="footer-copy">© 2025 All rights reserved</div>
+            <div class="footer-copy">© 2026 All rights reserved</div>
         </footer>
 
     </div><!-- /app-wrapper -->
