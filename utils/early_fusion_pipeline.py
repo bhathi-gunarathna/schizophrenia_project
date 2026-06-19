@@ -1,7 +1,7 @@
 import numpy as np
 import joblib
 
-from utils.eeg_pipeline import extract_eeg_features
+from utils.eeg_pipeline import extract_eeg_features, predict_eeg
 from utils.fmri_pipeline import extract_fmri_features
 
 # --------------------------------------------------
@@ -24,7 +24,10 @@ def early_fusion_predict(eeg_path, fmri_path):
         eeg_features = extract_eeg_features(eeg_path)
         eeg_features = np.array(eeg_features).reshape(1, -1)
 
-        # Ensure EEG feature size
+        # Normalize EEG (IMPORTANT FIX)
+        eeg_features = eeg_features / (np.max(np.abs(eeg_features)) + 1e-6)
+
+        # Ensure EEG size
         expected_eeg_len = 95
         if eeg_features.shape[1] != expected_eeg_len:
             if eeg_features.shape[1] > expected_eeg_len:
@@ -37,7 +40,7 @@ def early_fusion_predict(eeg_path, fmri_path):
         fmri_features = extract_fmri_features(fmri_path)
         fmri_features = np.array(fmri_features).reshape(1, -1)
 
-        # Ensure correct input size for PCA
+        # Ensure PCA input size
         expected_fmri_len = pca.n_features_in_
 
         if fmri_features.shape[1] != expected_fmri_len:
@@ -53,18 +56,29 @@ def early_fusion_predict(eeg_path, fmri_path):
         # ---------------- FUSION ----------------
         fused = np.concatenate([eeg_features, fmri_features], axis=1)
 
-        # Scale
+        # Scale (trained scaler)
         fused = scaler.transform(fused)
 
-        # ---------------- PREDICTION ----------------
-        prediction = model.predict(fused)[0]
-
-        # ---------------- CONFIDENCE (FIXED) ----------------
+        # ---------------- PROBABILITY ----------------
         if hasattr(model, "predict_proba"):
-            confidence = model.predict_proba(fused)[0][prediction]
+            prob = model.predict_proba(fused)[0][1]
         else:
             score = model.decision_function(fused)[0]
-            confidence = 1 / (1 + np.exp(-score))
+            prob = 1 / (1 + np.exp(-score))
+
+        # ---------------- THRESHOLD TUNING ----------------
+        # (IMPORTANT: improves schizophrenia detection)
+        prediction = 1 if prob > 0.4 else 0
+
+        # ---------------- FALLBACK (VERY IMPORTANT) ----------------
+        # If fusion is uncertain → trust EEG more
+        eeg_pred, eeg_conf = predict_eeg(eeg_path)
+
+        if prob < 0.55:
+            prediction = eeg_pred
+            prob = eeg_conf
+
+        confidence = prob * 100
 
         return int(prediction), float(confidence)
 

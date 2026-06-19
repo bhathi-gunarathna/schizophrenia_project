@@ -6,7 +6,7 @@ import os
 
 from utils.fmri_pipeline import predict_fmri
 from utils.eeg_pipeline import predict_eeg
-from utils.early_fusion_pipeline import early_fusion_predict
+from utils.multimodal_pipeline import late_fusion_predict
 
 app = FastAPI(
     title="SchzoFusion – Schizophrenia Screening System",
@@ -48,26 +48,6 @@ async def predict_fmri_api(file: UploadFile = File(...)):
          "disclaimer": "This result is for research and screening purposes only and is not a medical diagnosis."
     }
 
-@app.get("/")
-def home():
-    return FileResponse("static/index.html")
-
-@app.get("/fmri")
-def fmri_page():
-    return FileResponse("static/fmri.html")
-
-@app.get("/eeg")
-def eeg_page():
-    return FileResponse("static/eeg.html")
-
-@app.get("/multimodal")
-def multimodal_page():
-    return FileResponse("static/multimodal.html")
-
-@app.get("/about")
-def about_page():
-    return FileResponse("static/about.html")
-
 
 @app.post("/predict_eeg")
 async def predict_eeg_api(file: UploadFile = File(...)):
@@ -88,7 +68,7 @@ async def predict_eeg_api(file: UploadFile = File(...)):
             "modality": "EEG",
             "prediction": label,
             "class_id": prediction,
-            "confidence": round(confidence, 3),
+            "confidence": round(confidence,3),
             "disclaimer": "This is a screening tool, not a medical diagnosis."
         }
 
@@ -97,28 +77,57 @@ async def predict_eeg_api(file: UploadFile = File(...)):
 
 @app.post("/predict_multimodal")
 async def predict_multimodal(
-        eeg_file: UploadFile = File(...),
-        fmri_file: UploadFile = File(...)):
-
-    try:
-        os.makedirs("temp", exist_ok=True)
-
-        eeg_path = f"temp/{eeg_file.filename}"
-        with open(eeg_path, "wb") as f:
-            f.write(await eeg_file.read())
-
-        fmri_path = f"temp/{fmri_file.filename}"
-        with open(fmri_path, "wb") as f:
-            f.write(await fmri_file.read())
-
-        prediction, confidence = early_fusion_predict(eeg_path, fmri_path)
-
-        label = "Healthy" if prediction == 0 else "Schizophrenia"
-
+    eeg_file: UploadFile = File(None),
+    fmri_file: UploadFile = File(None)):
+    
+    if eeg_file is None or fmri_file is None:
         return {
-            "prediction": label,
-            "confidence": confidence
+            "error": "Please upload BOTH EEG (.edf) and fMRI (.nii.gz) files"
         }
+    else:
 
-    except Exception as e:
-        return {"error": str(e)}
+        try:
+            os.makedirs("temp", exist_ok=True)
+
+            eeg_path = f"temp/{eeg_file.filename}"
+            with open(eeg_path, "wb") as f:
+                f.write(await eeg_file.read())
+
+            fmri_path = f"temp/{fmri_file.filename}"
+            with open(fmri_path, "wb") as f:
+                f.write(await fmri_file.read())
+
+            prediction, confidence = late_fusion_predict(eeg_path, fmri_path)
+
+            class_id = 0 if prediction == "Healthy" else 1
+
+            return {
+                "prediction": prediction,
+                "confidence": confidence,
+                "class_id": class_id
+            }
+
+        except Exception as e:
+            return {"error": str(e)}
+
+    
+
+@app.get("/")
+def home():
+    return FileResponse("static/index.html")
+
+@app.get("/fmri")
+def fmri_page():
+    return FileResponse("static/fmri.html")
+
+@app.get("/eeg")
+def eeg_page():
+    return FileResponse("static/eeg.html")
+
+@app.get("/multimodal")
+def multimodal_page():
+    return FileResponse("static/multimodal.html")
+
+@app.get("/about")
+def about_page():
+    return FileResponse("static/about.html")
