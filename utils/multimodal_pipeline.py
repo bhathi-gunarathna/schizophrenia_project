@@ -1,35 +1,44 @@
-from utils.eeg_pipeline import predict_eeg
 from utils.fmri_pipeline import predict_fmri
+from utils.eeg_pipeline import predict_eeg
 
 
-def late_fusion_predict(eeg_path, fmri_path):
+def multimodal_predict(eeg_file=None, fmri_file=None):
 
-    eeg_pred, eeg_conf = predict_eeg(eeg_path)
+    eeg_prob = None
+    fmri_prob = None
 
-    fmri_pred, fmri_conf = predict_fmri(fmri_path)
+    # ---------------- EEG prediction ----------------
+    if eeg_file:
+        eeg_label, eeg_prob = predict_eeg(eeg_file)
 
-    # Convert confidence to schizophrenia probability
+    # ---------------- fMRI prediction ----------------
+    if fmri_file:
+        fmri_label, fmri_prob = predict_fmri(fmri_file)
 
-    eeg_prob = eeg_conf if eeg_pred == 1 else (1 - eeg_conf)
+    # ---------------- Fusion ----------------
+    probs = []
 
-    fmri_prob = fmri_conf if fmri_pred == 1 else (1 - fmri_conf)
+    if eeg_prob is not None:
+        probs.append(eeg_prob)
 
-    print("EEG Schizophrenia Probability:", eeg_prob)
-    print("fMRI Schizophrenia Probability:", fmri_prob)
+    if fmri_prob is not None:
+        probs.append(fmri_prob)
 
-    # Weighted fusion
+    if len(probs) == 0:
+        return "No data provided", 0
 
-    fusion_prob = (
-        eeg_prob * 0.6 +
-        fmri_prob * 0.4
-    )
-
-    if fusion_prob >= 0.5:
-
-        label = "Non-Healthy (Schizophrenia)"
-
+    # weighted fusion (fMRI slightly stronger)
+    if eeg_prob is not None and fmri_prob is not None:
+        final_prob = 0.4 * eeg_prob + 0.6 * fmri_prob
     else:
+        final_prob = probs[0]
 
+    # ---------------- Final decision ----------------
+    if final_prob >= 0.5:
+        label = "Suffering from Schizophrenia"
+        class_id = 1
+    else:
         label = "Healthy"
+        class_id = 0
 
-    return label, round(fusion_prob ,3)
+    return label, final_prob
