@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/static/shared.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <link rel="icon" type="image/x-icon" href="/static/schizophrenia.ico">
     <style>
         .page-banner {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 45%, #ecfeff 100%);
@@ -29,16 +31,11 @@
         }
 
         .banner-icon {
-            width: 88px;
-            height: 88px;
-            border-radius: 26px;
+            width: 100px;
+            height: 100px;
             margin: 0 auto 24px;
-            background: linear-gradient(135deg, #2563eb, #0891b2, #16a34a);
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 2.4rem;
-            box-shadow: 0 14px 40px rgba(37, 99, 235, .25), inset 0 1px 0 rgba(255, 255, 255, .25);
         }
 
         .banner-title {
@@ -438,14 +435,12 @@
         <header id="hdr">
             <div class="logo">
                 <a href="/" class="logo-link">
-                    <div class="logo-mark"><svg viewBox="0 0 24 24">
-                            <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
-                        </svg></div>
+                    <div class="logo-mark">
+                        <img src="/static/schizophrenia.png" alt="logo">    
+                    </div>
                 </a>
                 <a href="/" class="logo-name-link"><span class="logo-wordmark">Schzo<span
                             class="logo-wordmark-accent">Fusion</span></span></a>
-                <span class="logo-pill">AI</span>
             </div>
             <nav>
                 <a href="/" class="nav-chip">Screening</a>
@@ -462,7 +457,7 @@
         </header>
 
         <section class="page-banner" id="banner">
-            <div class="banner-icon">🧬</div>
+            <div class="banner-icon"><img src="/static/schizophrenia.png" alt="logo"></div>
             <h1 class="banner-title">About <span class="hl">SchzoFusion</span></h1>
             <p class="banner-desc">A final-year research project developing a multimodal AI platform that integrates
                 fMRI and EEG neuroimaging data to provide early, objective screening support for schizophrenia.</p>
@@ -540,7 +535,7 @@
                 <div class="pipe-step">
                     <div class="pipe-num">3</div><span class="pipe-icon">🤖</span>
                     <div class="pipe-title">AI Inference</div>
-                    <div class="pipe-text">3D-CNN / LSTM / Fusion model runs inference.</div>
+                    <div class="pipe-text">Fusion model runs inference.</div>
                 </div>
                 <div class="pipe-conn">→</div>
                 <div class="pipe-step">

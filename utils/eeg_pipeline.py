@@ -1,68 +1,145 @@
+import mne
 import numpy as np
 import joblib
-import mne
 
-# ---------------- LOAD MODEL ----------------
-MODEL_PATH = "models/eeg_model.pkl"
-SCALER_PATH = "models/eeg_scaler.pkl"
+# --------------------------------------------------
+# LOAD MODEL
+# --------------------------------------------------
 
-model = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
+model = joblib.load("models/eeg_aszed_model.pkl")
+scaler = joblib.load("models/eeg_aszed_scaler.pkl")
 
-# ---------------- PREPROCESS ----------------
-def preprocess_eeg(edf_file):
-    raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
 
-    montage = mne.channels.make_standard_montage("standard_1020")
-    raw.set_montage(montage, on_missing="ignore")
+# --------------------------------------------------
+# FEATURE EXTRACTION
+# --------------------------------------------------
 
-    raw.filter(1.0, 40.0)
-    raw.set_eeg_reference("average")
+def extract_eeg_features(file_path):
 
-    return raw
-
-# ---------------- FEATURE EXTRACTION ----------------
-def extract_bandpower_features(raw):
-    bands = {
-        "delta": (1, 4),
-        "theta": (4, 8),
-        "alpha": (8, 13),
-        "beta": (13, 30),
-        "gamma": (30, 40),
-    }
-
-    psd = raw.compute_psd(
-        method="welch",
-        fmin=1,
-        fmax=40,
-        n_fft=1024,
+    raw = mne.io.read_raw_edf(
+        file_path,
+        preload=True,
         verbose=False
     )
 
-    psds = psd.get_data()
-    freqs = psd.freqs
+    # EEG channels only
+    raw.pick_types(eeg=True)
 
-    features = []
+    # Same as training
+    eeg_channels = raw.ch_names[:19]
 
-    for fmin, fmax in bands.values():
-        idx = (freqs >= fmin) & (freqs < fmax)
-        band_power = psds[:, idx].mean(axis=1)
-        features.append(band_power)
+    raw.pick_channels(eeg_channels)
 
-    return np.concatenate(features)
+    # Same as training
+    raw.set_eeg_reference("average")
 
-# ---------------- PREDICTION ----------------
-def predict_eeg(edf_path):
-    raw = preprocess_eeg(edf_path)
-    features = extract_bandpower_features(raw)
+    # Same as training
+    raw.filter(1, 40)
 
-    features = features.reshape(1, -1)
-    features = scaler.transform(features)
+    data = raw.get_data()
 
-    prob = model.predict_proba(features)[0][1]
-    pred = int(prob >= 0.5)
+    # Safety check
+    expected_channels = 19
 
-    label = "Schizophrenia" if pred == 1 else "Healthy"
-    confidence = prob if pred == 1 else 1 - prob
+    if data.shape[0] < expected_channels:
 
-    return label, round(float(confidence), 3)
+        pad = expected_channels - data.shape[0]
+
+        data = np.pad(
+            data,
+            ((0, pad), (0, 0)),
+            mode="constant"
+        )
+
+    elif data.shape[0] > expected_channels:
+
+        data = data[:expected_channels]
+
+    # ---------------- FEATURES ----------------
+
+    mean = np.mean(data, axis=1)
+
+    std = np.std(data, axis=1)
+
+    sfreq = raw.info["sfreq"]
+
+    psd, freqs = mne.time_frequency.psd_array_welch(
+        data,
+        sfreq=sfreq,
+        fmin=1,
+        fmax=40
+    )
+
+    delta = np.mean(
+        psd[:, (freqs >= 1) & (freqs <= 4)],
+        axis=1
+    )
+
+    theta = np.mean(
+        psd[:, (freqs >= 4) & (freqs <= 8)],
+        axis=1
+    )
+
+    alpha = np.mean(
+        psd[:, (freqs >= 8) & (freqs <= 13)],
+        axis=1
+    )
+
+    beta = np.mean(
+        psd[:, (freqs >= 13) & (freqs <= 30)],
+        axis=1
+    )
+
+    gamma = np.mean(
+        psd[:, (freqs >= 30) & (freqs <= 40)],
+        axis=1
+    )
+
+    features = np.concatenate([
+        mean,
+        std,
+        delta,
+        theta,
+        alpha,
+        beta,
+        gamma
+    ])
+
+    if np.isnan(features).any():
+        raise ValueError("NaN detected in EEG features")
+
+    return features
+
+
+# --------------------------------------------------
+# PREDICTION
+# --------------------------------------------------
+
+def predict_eeg(file_path):
+
+    try:
+
+        features = extract_eeg_features(file_path)
+
+        print("Feature Length:", len(features))
+
+        features = features.reshape(1, -1)
+
+        features = scaler.transform(features)
+
+        prediction = model.predict(features)[0]
+
+        probabilities = model.predict_proba(features)[0]
+
+        confidence = probabilities[prediction]
+
+        print("Probabilities:", probabilities)
+        print("Prediction:", prediction)
+
+        return int(prediction), float(confidence)
+
+    except Exception as e:
+
+        print("EEG Error:", e)
+
+        return 0, 0.0
