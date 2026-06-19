@@ -7,7 +7,6 @@
     <meta name="description"
         content="SchzoFusion fMRI Analysis – Upload NIfTI scans for AI-driven schizophrenia biomarker detection." />
     <title>fMRI Analysis | SchzoFusion</title>
-    <link rel="icon" type="image/x-icon" href="/static/schizophrenia.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
@@ -87,10 +86,9 @@
 
         /* Upload section */
         .upload-section {
-            box-shadow: var(--sh-md);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 28px;
+            max-width: 100% !important;
+            margin: 48px auto;
+            padding: 0 24px;
         }
 
         .upload-card {
@@ -409,11 +407,6 @@
             color: #0f172a;
             margin-bottom: 16px;
         }
-        .page-body {
-            max-width: 880px;
-            margin: 0 auto;
-            padding: 48px 24px 0;
-        }
 
         @media (max-width: 600px) {
             .info-grid {
@@ -423,9 +416,6 @@
             .upload-section,
             .info-section {
                 padding: 0 16px;
-            }
-            .page-body {
-                padding: 32px 16px 0
             }
 
             .upload-card {
@@ -449,12 +439,16 @@
             <div class="logo">
                 <a href="/" class="logo-link">
                     <div class="logo-mark">
-                        <img src="/static/schizophrenia.png" alt="logo">    
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
+                        </svg>
                     </div>
                 </a>
                 <a href="/" class="logo-name-link">
                     <span class="logo-wordmark">Schzo<span class="logo-wordmark-accent">Fusion</span></span>
                 </a>
+                <div class="logo-pill">AI</div>
             </div>
             <nav>
                 <a href="/" class="nav-chip">Screening</a>
@@ -478,7 +472,7 @@
                 to detect schizophrenia-related biomarkers.</p>
         </section>
 
-        <div class="page-body">
+        <div style="display: grid; grid-template-columns: 1 fr 1fr; gap: 10px;">
         <!-- UPLOAD SECTION -->
         <div class="upload-section" id="upload-section">
             <div class="upload-card">

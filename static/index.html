@@ -11,8 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-    <link rel="icon" type="image/x-icon" href="/static/schizophrenia.ico">
-
     <style>
         /* ── Index-page styles ───────────────────────────────────── */
 
@@ -433,12 +431,16 @@
             <div class="logo">
                 <a href="/" class="logo-link">
                     <div class="logo-mark">
-                        <img src="/static/schizophrenia.png" alt="logo">    
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-8v4h3l-4 8z" />
+                        </svg>
                     </div>
                 </a>
                 <a href="/" class="logo-name-link">
                     <span class="logo-wordmark">Schzo<span class="logo-wordmark-accent">Fusion</span></span>
                 </a>
+                <span class="logo-pill">AI</span>
             </div>
 
             <nav>
@@ -471,6 +473,10 @@
                 biomarkers and EEG temporal patterns for precision analysis.
             </p>
             <div class="stats-strip">
+                <div class="stat-cell">
+                    <span class="stat-num" data-count="94.7" data-dec="1">0</span>
+                    <span class="stat-lbl">Accuracy %</span>
+                </div>
                 <div class="stat-cell">
                     <span class="stat-num" data-count="3" data-dec="0">0</span>
                     <span class="stat-lbl">Modalities</span>
@@ -564,7 +570,8 @@
                             <div class="file-selected-label" id="fn-m-eeg"></div>
                         </div>
                         <div class="drop-zone" id="dz-m-fmri" style="padding: 45px 10px;">
-                            <input type="file" id="multiFMRI" accept=".nii,.nii.gz"onchange="onFile(this,'fn-m-fmri')" />
+                            <input type="file" id="multiFMRI" accept=".nii,.nii.gz"
+                                onchange="onFile(this,'fn-m-fmri')" />
                             <span class="dz-upload-icon">📁</span>
                             <div class="dz-primary-text">fMRI (.nii)</div>
                             <div class="dz-secondary-text">Drop or click</div>
@@ -631,7 +638,7 @@
             const dec = parseInt(el.dataset.dec);
             const obj = { v: 0 };
             gsap.to(obj, {
-                v: target, duration: 1, delay: 1, ease: 'power2.out',
+                v: target, duration: 2.2, delay: 1, ease: 'power2.out',
                 onUpdate() { el.textContent = dec ? obj.v.toFixed(dec) : Math.floor(obj.v); }
             });
         });
