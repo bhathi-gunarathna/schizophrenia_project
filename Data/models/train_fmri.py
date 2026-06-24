@@ -1,5 +1,3 @@
-# Data/models/train_fmri.py
-
 import os
 import numpy as np
 import joblib
@@ -8,7 +6,15 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, roc_auc_score, f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    roc_auc_score,
+    confusion_matrix,
+    classification_report
+)
 
 # =====================================================
 # 1. LOAD FEATURES
@@ -30,6 +36,8 @@ os.makedirs("models", exist_ok=True)
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 acc_scores = []
+precision_scores = []
+recall_scores = []
 auc_scores = []
 f1_scores = []
 
@@ -64,30 +72,53 @@ for train_idx, test_idx in cv.split(X, y):
     y_prob = model.predict_proba(X_test_pca)[:, 1]
 
     acc = accuracy_score(y_test, y_pred)
+
+    precision = precision_score(
+        y_test,
+        y_pred,
+        average="weighted",
+        zero_division=0
+    )
+
+    recall = recall_score(
+        y_test,
+        y_pred,
+        average="weighted",
+        zero_division=0
+    )
+
     auc = roc_auc_score(y_test, y_prob)
-    f1 = f1_score(y_test, y_pred)
+
+    f1 = f1_score(
+        y_test,
+        y_pred,
+        average="weighted",
+        zero_division=0
+    )
 
     acc_scores.append(acc)
+    precision_scores.append(precision)
+    recall_scores.append(recall)
     auc_scores.append(auc)
     f1_scores.append(f1)
 
     print(
         f"Fold {fold} → "
         f"ACC: {acc:.4f} | "
-        f"AUC: {auc:.4f} | "
-        f"F1: {f1:.4f}"
+        f"PREC: {precision:.4f} | "
+        f"REC: {recall:.4f} | "
+        f"F1: {f1:.4f} | "
+        f"AUC: {auc:.4f}"
     )
 
     fold += 1
 
 print("\n===== FINAL RESULTS =====")
-print(f"Mean ACC: {np.mean(acc_scores):.4f}")
-print(f"Mean AUC: {np.mean(auc_scores):.4f}")
-print(f"Mean F1 : {np.mean(f1_scores):.4f}")
-
-# =====================================================
-# 3. FINAL TRAINING ON FULL DATA
-# =====================================================
+print(f"Mean ACC       : {np.mean(acc_scores):.4f}")
+print(f"Mean Precision : {np.mean(precision_scores):.4f}")
+print(f"Mean Recall    : {np.mean(recall_scores):.4f}")
+print(f"Mean F1        : {np.mean(f1_scores):.4f}")
+print(f"Mean AUC       : {np.mean(auc_scores):.4f}")
 
 # Scale full dataset
 final_scaler = StandardScaler()
@@ -108,6 +139,13 @@ final_model = SVC(
 )
 
 final_model.fit(X_pca, y)
+y_pred = final_model.predict(X_pca)
+
+print("\n===== CONFUSION MATRIX =====")
+print(confusion_matrix(y, y_pred))
+
+print("\n===== CLASSIFICATION REPORT =====")
+print(classification_report(y, y_pred))
 
 # =====================================================
 # 4. SAVE MODEL + SCALER + PCA
